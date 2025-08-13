@@ -32,11 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.englishappforkid.R
-import com.example.englishappforkid.ui.theme.EnglishAppForKidTheme
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.boxFullname
 import com.example.englishappforkid.ui.theme.colorButtonBarBackGround
@@ -302,10 +300,10 @@ fun bottomNavBar() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun previewHomeScreen() {
-    EnglishAppForKidTheme {
-        homeScreen()
-    }
-}
+// @Preview(showBackground = true, showSystemUi = true)
+// @Composable
+// fun PreviewHomeScreen() {
+//    englishAppForKidTheme {
+//        homeScreen()
+//    }
+// }
