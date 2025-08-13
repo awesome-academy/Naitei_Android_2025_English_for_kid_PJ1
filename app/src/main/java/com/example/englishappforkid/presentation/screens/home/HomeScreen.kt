@@ -150,7 +150,6 @@ fun MenuCard(
     }
 }
 
-// Uncomment and customize if needed
 
 @Composable
 fun LeaderboardSection() {
@@ -298,7 +297,9 @@ fun BottomNavBar() {
             onClick = {}
         )
     }
+
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
