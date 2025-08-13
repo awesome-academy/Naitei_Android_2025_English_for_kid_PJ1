@@ -29,5 +29,4 @@ fun EnglishAppForKidTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = content
-    )
 }
