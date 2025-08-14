@@ -8,13 +8,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.englishappforkid.presentation.screens.home.ContentListScreen
-import com.example.englishappforkid.ui.theme.EnglishAppForKidTheme
+import com.example.englishappforkid.ui.theme.englishAppForKidTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            EnglishAppForKidTheme {
+            englishAppForKidTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,

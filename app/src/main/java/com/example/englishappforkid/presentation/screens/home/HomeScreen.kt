@@ -21,9 +21,7 @@ import com.example.englishappforkid.data.model.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    homeViewModel: HomeViewModel = viewModel()
-) {
+fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
     val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val onItemClick: (Topic) -> Unit = { topic ->
@@ -38,12 +36,12 @@ fun HomeScreen(
                     IconButton(onClick = { homeViewModel.toggleView() }) {
                         Icon(
                             imageVector = if (uiState.isListView) Icons.Default.GridView else Icons.Default.ViewList,
-                            contentDescription = "Switch View"
+                            contentDescription = "Switch View",
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         if (uiState.isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -54,7 +52,7 @@ fun HomeScreen(
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
             ) {
                 items(uiState.topics) { topic ->
                     TopicGridItem(topic = topic, onClick = { onItemClick(topic) })
@@ -63,4 +61,3 @@ fun HomeScreen(
         }
     }
 }
-
