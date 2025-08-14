@@ -11,20 +11,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.englishappforkid.data.DataSource
 import com.example.englishappforkid.data.model.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    homeViewModel: HomeViewModel = viewModel()
-) {
-    val uiState by homeViewModel.uiState.collectAsState()
+fun ContentListScreen() {
+    var isListView by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val onItemClick: (Topic) -> Unit = { topic ->
         Toast.makeText(context, "Clicked on ${topic.name}", Toast.LENGTH_SHORT).show()
@@ -35,9 +31,9 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("English Topics") },
                 actions = {
-                    IconButton(onClick = { homeViewModel.toggleView() }) {
+                    IconButton(onClick = { isListView = !isListView }) {
                         Icon(
-                            imageVector = if (uiState.isListView) Icons.Default.GridView else Icons.Default.ViewList,
+                            imageVector = if (isListView) Icons.Default.GridView else Icons.Default.ViewList,
                             contentDescription = "Switch View"
                         )
                     }
@@ -45,9 +41,9 @@ fun HomeScreen(
             )
         }
     ) { innerPadding ->
-        if (uiState.isListView) {
+        if (isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
-                items(uiState.topics) { topic ->
+                items(DataSource.topics) { topic ->
                     TopicListItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }
@@ -56,11 +52,10 @@ fun HomeScreen(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.padding(innerPadding)
             ) {
-                items(uiState.topics) { topic ->
+                items(DataSource.topics) { topic ->
                     TopicGridItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }
         }
     }
 }
-
