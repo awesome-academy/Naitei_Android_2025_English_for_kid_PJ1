@@ -28,7 +28,7 @@ import com.example.englishappforkid.data.model.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun contentListScreen() {
+fun ContentListScreen() {
     var isListView by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val onItemClick: (Topic) -> Unit = { topic ->
@@ -43,12 +43,12 @@ fun contentListScreen() {
                     IconButton(onClick = { isListView = !isListView }) {
                         Icon(
                             imageVector = if (isListView) Icons.Default.GridView else Icons.Default.ViewList,
-                            contentDescription = "Switch View",
+                            contentDescription = "Switch View"
                         )
                     }
-                },
+                }
             )
-        },
+        }
     ) { innerPadding ->
         if (isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -59,7 +59,7 @@ fun contentListScreen() {
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(innerPadding)
             ) {
                 items(DataSource.topics) { topic ->
                     TopicGridItem(topic = topic, onClick = { onItemClick(topic) })
@@ -67,4 +67,14 @@ fun contentListScreen() {
             }
         }
     }
+}
+
+@Composable
+fun TopicListItem(topic: Topic, onClick: () -> Unit) {
+    TODO("Not yet implemented")
+}
+
+@Composable
+fun TopicGridItem(topic: Topic, onClick: () -> Unit) {
+    TODO("Not yet implemented")
 }

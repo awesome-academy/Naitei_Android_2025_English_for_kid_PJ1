@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">EnglishAppforKid</string>
+    <string name="short_story">Short Story</string>
+    <string name="song">Song</string>
+    <string name="english_app">English App</string>
+    <string name="hello">Hello</string>
+    <string name="full_name">Full name</string>
+    <string name="leaderboard">👑 Leaderboard</string>
 </resources>

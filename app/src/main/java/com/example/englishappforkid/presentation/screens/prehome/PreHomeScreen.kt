@@ -1,4 +1,4 @@
-package com.example.englishappforkid.presentation.screens.home
+package com.example.englishappforkid.presentation.screens.prehome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,27 +27,35 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.englishappforkid.R
+import com.example.englishappforkid.data.model.LeaderboardEntry
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.boxFullname
 import com.example.englishappforkid.ui.theme.colorButtonBarBackGround
 import com.example.englishappforkid.ui.theme.colorButtonSelected
+import com.example.englishappforkid.ui.theme.englishAppForKidTheme
 import com.example.englishappforkid.ui.theme.icRefresh
 
 @Composable
-fun preHomeScreen() {
+fun preHomeScreen(viewModel: LeaderboardViewModel = viewModel()) {
+    val entries by viewModel.entries.collectAsState()
     Column(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(Color(0xFFFFFFFF))
+                .background(Color.White)
                 .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -55,7 +63,7 @@ fun preHomeScreen() {
         Spacer(modifier = Modifier.height(36.dp))
 
         menuCard(
-            title = "Short Story",
+            title = stringResource(R.string.short_story),
             backgroundColor = boxBackground,
             icon = {
                 Image(
@@ -69,7 +77,7 @@ fun preHomeScreen() {
         Spacer(modifier = Modifier.height(24.dp))
 
         menuCard(
-            title = "Song",
+            title = stringResource(R.string.song),
             backgroundColor = boxBackground,
             icon = {
                 Image(
@@ -82,7 +90,7 @@ fun preHomeScreen() {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        leaderboardSection()
+        leaderboardSection(entries)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -107,7 +115,7 @@ fun headerSection() {
         ) {
             Spacer(modifier = Modifier.size(24.dp))
             Text(
-                text = "English App",
+                text = stringResource(R.string.english_app),
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -129,13 +137,13 @@ fun headerSection() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Hello")
+            Text(stringResource(R.string.hello))
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(containerColor = boxFullname),
                 shape = RoundedCornerShape(8.dp),
             ) {
-                Text("full name.", color = Color.White)
+                Text(stringResource(R.string.full_name), color = Color.White)
             }
         }
     }
@@ -170,7 +178,7 @@ fun menuCard(
 }
 
 @Composable
-fun leaderboardSection() {
+fun leaderboardSection(entries: List<LeaderboardEntry>) {
     Column(
         modifier =
             Modifier
@@ -178,7 +186,7 @@ fun leaderboardSection() {
                 .background(Color(0xFFCCF2F4), RoundedCornerShape(12.dp))
                 .padding(8.dp),
     ) {
-        Text("👑 Leaderboard", fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.leaderboard), fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
 
         Box(
@@ -239,15 +247,15 @@ fun leaderboardSection() {
         }
 
         Spacer(modifier = Modifier.height(36.dp))
+        entries.forEachIndexed { idx, entry ->
+            HorizontalDivider(thickness = 1.dp, color = Color.Black)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "${entry.rank}  ${entry.name}${if (entry.isYou) " (You)" else ""}",
+                fontWeight = if (entry.isYou) FontWeight.Bold else FontWeight.Normal,
+            )
+        }
         HorizontalDivider(thickness = 1.dp, color = Color.Black)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("100  Triệu Thị Huyền (You)")
-        HorizontalDivider(thickness = 1.dp, color = Color.Black)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("101  Vũ Hà My")
-        HorizontalDivider(thickness = 1.dp, color = Color.Black)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("101  Vũ Hà My")
     }
 }
 
@@ -271,7 +279,7 @@ fun bottomNavBar() {
                     contentDescription = "Stories",
                 )
             },
-            selected = true,
+            selected = false,
             onClick = {},
         )
         NavigationBarItem(
@@ -281,29 +289,26 @@ fun bottomNavBar() {
                     contentDescription = "Download",
                 )
             },
-            selected = true,
+            selected = false,
             onClick = {},
         )
         NavigationBarItem(
             icon = {
-                Box(
-                    modifier = Modifier.background(if (true) Color.Yellow else Color.White),
-                )
                 Image(
                     painter = painterResource(id = R.drawable.ic_user),
                     contentDescription = "User",
                 )
             },
-            selected = false,
+            selected = true,
             onClick = {},
         )
     }
 }
 
-// @Preview(showBackground = true, showSystemUi = true)
-// @Composable
-// fun PreviewHomeScreen() {
-//    englishAppForKidTheme {
-//        PreHomeScreen()
-//    }
-// }
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewHomeScreen() {
+    englishAppForKidTheme {
+        preHomeScreen()
+    }
+}
