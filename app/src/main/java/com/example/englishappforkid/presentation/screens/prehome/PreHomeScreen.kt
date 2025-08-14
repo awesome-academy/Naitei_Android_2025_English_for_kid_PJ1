@@ -305,10 +305,10 @@ fun bottomNavBar() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewHomeScreen() {
-    englishAppForKidTheme {
-        preHomeScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun PreviewHomeScreen() {
+//    englishAppForKidTheme {
+//        preHomeScreen()
+//    }
+//}
