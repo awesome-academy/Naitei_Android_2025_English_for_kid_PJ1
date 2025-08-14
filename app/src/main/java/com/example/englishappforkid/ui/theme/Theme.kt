@@ -10,35 +10,36 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-
-private val DarkColorScheme =
-    darkColorScheme(
-        primary = Purple80,
-        secondary = PurpleGrey80,
-        tertiary = Pink80,
-    )
-private val LightColorScheme =
+  
+private val lightColorScheme =
     lightColorScheme(
-        primary = Purple40,
-        secondary = PurpleGrey40,
-        tertiary = Pink40,
+        primary = Color(color = 0xFF2196F3),
+        secondary = Color(0xFF03DAC6),
+        background = Color(0xFFF5F5F5),
+        onPrimary = Color.White,
     )
 
+private val darkColorScheme =
+    darkColorScheme(
+        primary = Color(0xFFBB86FC),
+        secondary = Color(0xFF03DAC6),
+        background = Color(0xFF121212),
+        onPrimary = Color.Black,
+    )
 @Composable
 fun EnglishAppForKidTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
-    val colorScheme =
-        when {
-            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                val context = LocalContext.current
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            }
-            darkTheme -> DarkColorScheme
-            else -> LightColorScheme
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -47,7 +48,7 @@ fun EnglishAppForKidTheme(
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
-    MaterialTheme(
+   MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = content,

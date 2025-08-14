@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.*
@@ -22,7 +21,9 @@ import com.example.englishappforkid.data.model.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(
+    homeViewModel: HomeViewModel = viewModel()
+) {
     val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val onItemClick: (Topic) -> Unit = { topic ->
@@ -36,13 +37,13 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 actions = {
                     IconButton(onClick = { homeViewModel.toggleView() }) {
                         Icon(
-                            imageVector = if (uiState.isListView) Icons.Default.GridView else Icons.AutoMirrored.Filled.ViewList,
-                            contentDescription = "Switch View",
+                            imageVector = if (uiState.isListView) Icons.Default.GridView else Icons.Default.ViewList,
+                            contentDescription = "Switch View"
                         )
                     }
-                },
+                }
             )
-        },
+        }
     ) { innerPadding ->
         if (uiState.isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -53,7 +54,7 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(innerPadding)
             ) {
                 items(uiState.topics) { topic ->
                     TopicGridItem(topic = topic, onClick = { onItemClick(topic) })
@@ -62,3 +63,4 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
         }
     }
 }
+
