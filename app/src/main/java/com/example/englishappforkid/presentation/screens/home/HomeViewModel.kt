@@ -24,4 +24,3 @@ class HomeViewModel : ViewModel() {
         _uiState.update { it.copy(isListView = !it.isListView) }
     }
 }
-

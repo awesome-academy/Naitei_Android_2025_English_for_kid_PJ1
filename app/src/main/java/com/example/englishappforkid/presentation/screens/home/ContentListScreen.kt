@@ -10,8 +10,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.ViewList
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.englishappforkid.data.DataSource
@@ -19,7 +28,7 @@ import com.example.englishappforkid.data.model.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentListScreen() {
+fun contentListScreen() {
     var isListView by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val onItemClick: (Topic) -> Unit = { topic ->
@@ -34,12 +43,12 @@ fun ContentListScreen() {
                     IconButton(onClick = { isListView = !isListView }) {
                         Icon(
                             imageVector = if (isListView) Icons.Default.GridView else Icons.Default.ViewList,
-                            contentDescription = "Switch View"
+                            contentDescription = "Switch View",
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         if (isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -50,7 +59,7 @@ fun ContentListScreen() {
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
             ) {
                 items(DataSource.topics) { topic ->
                     TopicGridItem(topic = topic, onClick = { onItemClick(topic) })

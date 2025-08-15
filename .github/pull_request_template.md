@@ -1,5 +1,5 @@
 ## Related Tickets
-- [#Task 90500: Initialize Project](https://edu-redmine.sun-asterisk.vn/issues/90500)
+- [#Task 90614: Initialize Project](https://edu-redmine.sun-asterisk.vn/issues/90500)
 ## WHAT
 - Setup MVVM Structure
 - init Firebase
