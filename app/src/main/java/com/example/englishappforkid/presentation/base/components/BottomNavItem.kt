@@ -13,5 +13,5 @@ val bottomNavItems =
         BottomNavItem("home", R.drawable.ic_home),
         BottomNavItem("story", R.drawable.ic_book),
         BottomNavItem("download", R.drawable.ic_download),
-        BottomNavItem("user", R.drawable.ic_user),
+        BottomNavItem("profile", R.drawable.ic_user),
     )

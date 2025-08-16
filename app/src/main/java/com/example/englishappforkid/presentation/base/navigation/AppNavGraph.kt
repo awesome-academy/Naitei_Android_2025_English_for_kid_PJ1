@@ -13,7 +13,7 @@ import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 fun appNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { preHomeScreen(navController) }
-        composable("story") { contentListScreen() }
+        composable("story") { contentListScreen(navController) }
     }
 }
 

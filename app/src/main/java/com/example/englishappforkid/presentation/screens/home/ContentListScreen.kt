@@ -23,12 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 import com.example.englishappforkid.data.DataSource
 import com.example.englishappforkid.data.model.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun contentListScreen() {
+fun contentListScreen(navController: NavHostController) {
     var isListView by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val onItemClick: (Topic) -> Unit = { topic ->
