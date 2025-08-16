@@ -10,4 +10,4 @@
 local.properties
 
 # Google Services file
-google-services.json
+app/google-services.json
