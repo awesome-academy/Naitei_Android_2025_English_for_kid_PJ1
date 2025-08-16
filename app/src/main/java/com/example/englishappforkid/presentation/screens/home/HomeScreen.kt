@@ -51,7 +51,7 @@ fun homeScreen(homeViewModel: HomeViewModel = viewModel()) {
         if (uiState.isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
                 items(uiState.topics) { topic ->
-                    TopicListItem(topic = topic, onClick = { onItemClick(topic) })
+                    topicListItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }
         } else {
@@ -60,7 +60,7 @@ fun homeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 modifier = Modifier.padding(innerPadding),
             ) {
                 items(uiState.topics) { topic ->
-                    TopicGridItem(topic = topic, onClick = { onItemClick(topic) })
+                    topicGridItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }
         }

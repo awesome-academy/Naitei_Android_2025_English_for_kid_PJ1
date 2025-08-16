@@ -23,8 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,17 +36,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.LeaderboardEntry
+import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.boxFullname
-import com.example.englishappforkid.ui.theme.colorButtonBarBackGround
 import com.example.englishappforkid.ui.theme.colorButtonSelected
 import com.example.englishappforkid.ui.theme.icRefresh
 
 @Composable
-fun preHomeScreen(viewModel: LeaderboardViewModel = viewModel()) {
+fun preHomeScreen(
+    navController: NavHostController,
+    viewModel: LeaderboardViewModel = viewModel(),
+) {
     val entries by viewModel.entries.collectAsState()
+    preHomeScreenContent(navController = navController, entries = entries)
+}
+
+@Composable
+fun preHomeScreenContent(
+    navController: NavHostController,
+    entries: List<LeaderboardEntry>,
+) {
     Column(
         modifier =
             Modifier
@@ -92,7 +102,7 @@ fun preHomeScreen(viewModel: LeaderboardViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        bottomNavBar()
+        bottomNavBar(navController)
     }
 }
 
@@ -187,9 +197,7 @@ fun leaderboardSection(entries: List<LeaderboardEntry>) {
         Text(stringResource(R.string.leaderboard), fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
 
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Image(
                 painter = painterResource(id = R.drawable.ic_crown),
                 contentDescription = "Crown",
@@ -245,60 +253,15 @@ fun leaderboardSection(entries: List<LeaderboardEntry>) {
         }
 
         Spacer(modifier = Modifier.height(36.dp))
-        entries.forEachIndexed { idx, entry ->
-            HorizontalDivider(thickness = 1.dp, color = Color.Black)
+        entries.forEach { entry ->
+
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "${entry.rank}  ${entry.name}${if (entry.isYou) " (You)" else ""}",
                 fontWeight = if (entry.isYou) FontWeight.Bold else FontWeight.Normal,
             )
+            HorizontalDivider(thickness = 1.dp, color = Color.Black)
         }
-        HorizontalDivider(thickness = 1.dp, color = Color.Black)
-    }
-}
-
-@Composable
-fun bottomNavBar() {
-    NavigationBar(containerColor = colorButtonBarBackGround) {
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_home),
-                    contentDescription = "Stories",
-                )
-            },
-            selected = true,
-            onClick = {},
-        )
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_book),
-                    contentDescription = "Stories",
-                )
-            },
-            selected = false,
-            onClick = {},
-        )
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_download),
-                    contentDescription = "Download",
-                )
-            },
-            selected = false,
-            onClick = {},
-        )
-        NavigationBarItem(
-            icon = {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_user),
-                    contentDescription = "User",
-                )
-            },
-            selected = true,
-            onClick = {},
-        )
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }

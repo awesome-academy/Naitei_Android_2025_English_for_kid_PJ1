@@ -53,7 +53,7 @@ fun contentListScreen() {
         if (isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
                 items(DataSource.topics) { topic ->
-                    TopicListItem(topic = topic, onClick = { onItemClick(topic) })
+                    topicListItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }
         } else {
@@ -62,7 +62,7 @@ fun contentListScreen() {
                 modifier = Modifier.padding(innerPadding),
             ) {
                 items(DataSource.topics) { topic ->
-                    TopicGridItem(topic = topic, onClick = { onItemClick(topic) })
+                    topicGridItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }
         }
