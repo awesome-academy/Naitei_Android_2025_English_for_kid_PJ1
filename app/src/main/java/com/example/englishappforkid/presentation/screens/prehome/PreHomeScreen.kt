@@ -36,7 +36,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-
 import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.LeaderboardEntry
@@ -104,7 +103,6 @@ fun preHomeScreenContent(
         Spacer(modifier = Modifier.height(20.dp))
 
         bottomNavBar(navController)
-
     }
 }
 
@@ -266,6 +264,5 @@ fun leaderboardSection(entries: List<LeaderboardEntry>) {
             HorizontalDivider(thickness = 1.dp, color = Color.Black)
         }
         Spacer(modifier = Modifier.height(8.dp))
-
     }
 }
