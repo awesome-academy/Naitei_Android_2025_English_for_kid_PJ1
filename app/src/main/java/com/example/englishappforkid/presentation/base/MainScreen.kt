@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
+import com.example.englishappforkid.presentation.screens.profile.profileScreen
 
 @Composable
 fun mainScreen() {
@@ -27,7 +28,7 @@ fun mainScreen() {
             composable("home") { preHomeScreen(navController) }
             composable("story") { contentListScreen(navController) }
             composable("download") { /* downloadScreen(navController) */ }
-            composable("profile") { /* userScreen(navController) */ }
+            composable("profile") { profileScreen(navController) }
         }
     }
 }
