@@ -1,5 +1,7 @@
 ## Related Tickets
-- [#Task 90616: UI Noti](https://edu-redmine.sun-asterisk.vn/issues/90615)
+
+- [#Task 90615: UI Noti](https://edu-redmine.sun-asterisk.vn/issues/90615)
+
 ## WHAT
 -base/navigation
 -Setup UI Profile/Notification
