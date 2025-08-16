@@ -1,8 +1,10 @@
 ## Related Tickets
-- [#Task 90614: Initialize Project](https://edu-redmine.sun-asterisk.vn/issues/90500)
+- [#Task 90616: UI Noti](https://edu-redmine.sun-asterisk.vn/issues/90615)
 ## WHAT
-- Setup MVVM Structure
-- init Firebase
+-base/navigation
+-Setup UI Profile/Notification
+
+
 
 ## Evidence (Screenshot or Video)
 ## Review Checklist
