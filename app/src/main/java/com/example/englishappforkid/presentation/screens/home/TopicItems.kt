@@ -74,7 +74,10 @@ fun TopicGridItem(videoItem: VideoItem, onClick: () -> Unit) {
                 painter = rememberAsyncImagePainter(videoItem.thumbnailUrl),
                 contentDescription = null,
                 //Modifier để ảnh tràn hết không gian trong Card
-                modifier = Modifier.fillMaxSize(),
+                //Modifier để ảnh chiếm phần còn lại của Card, không che Text
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
