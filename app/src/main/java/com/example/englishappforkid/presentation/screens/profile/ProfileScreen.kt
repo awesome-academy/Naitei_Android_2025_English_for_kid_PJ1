@@ -195,7 +195,7 @@ fun menuCard(
             Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .clickable { onClick() }, 
+                .clickable { onClick() },
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
             Row(
@@ -230,7 +230,6 @@ fun logout(
                 .height(60.dp)
                 .background(color = backgroundColor, shape = RoundedCornerShape(12.dp))
                 .clickable { onClick() },
-        
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -248,6 +247,5 @@ fun previewProfileScreen() {
     englishAppForKidTheme {
         val navController = rememberNavController()
         profileScreen(navController = navController)
-
     }
 }

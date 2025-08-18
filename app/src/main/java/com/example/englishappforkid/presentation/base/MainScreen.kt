@@ -34,7 +34,6 @@ fun mainScreen() {
             composable("term_policy_screen") { /* Policy Screen */ }
             composable("login_screen") { /* Login Screen */ }
             composable("profile_detail_screen") { /* Profile Detail */ }
-
         }
     }
 }
