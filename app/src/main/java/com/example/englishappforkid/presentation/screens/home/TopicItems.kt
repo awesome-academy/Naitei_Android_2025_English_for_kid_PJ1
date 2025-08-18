@@ -1,5 +1,6 @@
 package com.example.englishappforkid.presentation.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,94 +11,102 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.FamilyRestroom
-import androidx.compose.material.icons.filled.Kitchen
-import androidx.compose.material.icons.filled.Numbers
-import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material.icons.filled.Spa
-import androidx.compose.material.icons.filled.SportsBasketball
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Work
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.englishappforkid.data.model.Topic
+import coil.compose.rememberAsyncImagePainter
+import com.example.englishappforkid.data.model.VideoItem
 
 @Composable
-fun topicListItem(
-    topic: Topic,
-    onClick: () -> Unit,
-) {
+fun TopicListItem(videoItem: VideoItem, onClick: () -> Unit) {
     Card(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 8.dp)
-                .clickable(onClick = onClick),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .clickable(onClick = onClick)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = getIconForTopic(topic.name),
+        Column {
+            Image(
+                painter = rememberAsyncImagePainter(videoItem.thumbnailUrl),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
+                //Ảnh tràn chiều ngang và có chiều cao cố định
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentScale = ContentScale.Crop
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = topic.name, style = MaterialTheme.typography.titleMedium)
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = videoItem.title, style = MaterialTheme.typography.titleMedium)
+            }
         }
     }
 }
 
 @Composable
-fun topicGridItem(
-    topic: Topic,
-    onClick: () -> Unit,
-) {
+fun TopicGridItem(videoItem: VideoItem, onClick: () -> Unit) {
     Card(
-        modifier =
-            Modifier
-                .padding(8.dp)
-                .aspectRatio(1f)
-                .clickable(onClick = onClick),
+        modifier = Modifier
+            .padding(8.dp)
+            .aspectRatio(1f)
+            .clickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = getIconForTopic(topic.name),
+            Image(
+                painter = rememberAsyncImagePainter(videoItem.thumbnailUrl),
                 contentDescription = null,
-                modifier = Modifier.size(48.dp),
+                //Modifier để ảnh tràn hết không gian trong Card
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = topic.name, style = MaterialTheme.typography.titleSmall)
+            Text(text = videoItem.title, style = MaterialTheme.typography.titleSmall)
         }
     }
 }
 
 @Composable
-fun getIconForTopic(topicName: String): ImageVector =
-    when (topicName) {
-        "Animals" -> Icons.Default.Pets
-        "Colors" -> Icons.Default.ColorLens
-        "Numbers" -> Icons.Default.Numbers
-        "Fruits" -> Icons.Default.Spa
-        "Family" -> Icons.Default.FamilyRestroom
-        "Jobs" -> Icons.Default.Work
-        "Sports" -> Icons.Default.SportsBasketball
-        "Kitchen" -> Icons.Default.Kitchen
-        else -> Icons.Default.Star
+fun AlphabetFilter(onLetterClick: (String) -> Unit) {
+    val alphabet = ('A'..'Z').toList()
+
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        items(alphabet) { letter ->
+            Button(
+                onClick = { onLetterClick(letter.toString()) },
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.LightGray,
+                    contentColor = Color.Black
+                ),
+                modifier = Modifier.padding(horizontal = 4.dp),
+            ) {
+                Text(
+                    text = letter.toString(),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
+}

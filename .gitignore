@@ -11,3 +11,6 @@ local.properties
 
 # Google Services file
 google-services.json
+
+# Ignore ktlint incremental reports
+/.ktlint_incremental/
