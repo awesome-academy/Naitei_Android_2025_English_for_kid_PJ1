@@ -12,4 +12,6 @@
     <string name="term_policy"><![CDATA[Term & Policy]]></string>
     <string name="log_out">Log out</string>
     <string name="view_my_profile">View my profile</string>
+    <string name="short_stories">Short Stories</string>
+    <string name="search_stories">Search stories...</string>
 </resources>

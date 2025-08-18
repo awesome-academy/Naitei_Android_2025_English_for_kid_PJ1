@@ -37,6 +37,8 @@ fun mainScreen() {
             composable(ScreenRoutes.TERM_POLICY) { /* Policy Screen */ }
             composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
             composable(ScreenRoutes.PROFILE_DETAIL) { /* Profile Detail */ }
+            composable(ScreenRoutes.VIDEO_LIST) { // Nhớ thêm VIDEO_LIST vào file ScreenRoutes.kt
+                videoListScreen()
         }
     }
 }

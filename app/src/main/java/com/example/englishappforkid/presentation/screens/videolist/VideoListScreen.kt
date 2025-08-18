@@ -57,6 +57,7 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
     var selectedLetter by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
+<<<<<<< HEAD
     val filteredVideos =
         remember(videos, searchQuery, selectedLetter) {
             val currentSelectedLetter = selectedLetter
@@ -71,6 +72,19 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
                 matchesSearch && matchesLetter
             }
         }
+=======
+    val filteredVideos = remember(videos, searchQuery, selectedLetter) {
+        val currentSelectedLetter = selectedLetter
+        videos.filter { video ->
+            val matchesSearch = video.title.contains(searchQuery, ignoreCase = true)
+            val matchesLetter = currentSelectedLetter == null || video.title.startsWith(
+                currentSelectedLetter,
+                ignoreCase = true
+            )
+            matchesSearch && matchesLetter
+        }
+    }
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
 
     Scaffold(
         topBar = {
@@ -90,36 +104,61 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
                     IconButton(onClick = { viewModel.toggleView() }) {
                         Icon(
                             imageVector = if (isListView) Icons.Default.GridView else Icons.AutoMirrored.Filled.ViewList,
+<<<<<<< HEAD
                             contentDescription = "Switch View",
                         )
                     }
                 },
             )
         },
+=======
+                            contentDescription = "Switch View"
+                        )
+                    }
+                }
+            )
+        }
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
+<<<<<<< HEAD
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
                 placeholder = { Text("Search stories...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
+=======
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                placeholder = { Text("Search stories...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") }
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
             )
             alphabetFilter(
                 selectedLetter = selectedLetter,
                 onLetterClick = { letter ->
                     selectedLetter = if (selectedLetter == letter) null else letter
+<<<<<<< HEAD
                 },
+=======
+                }
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
             )
             if (isListView) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoListItem(videoItem = video, onClick = {
+<<<<<<< HEAD
                             Toast
                                 .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
+=======
+                            Toast.makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
                                 .show()
                         })
                     }
@@ -127,12 +166,20 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
+<<<<<<< HEAD
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoGridItem(videoItem = video, onClick = {
                             Toast
                                 .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
+=======
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(filteredVideos, key = { it.id }) { video ->
+                        videoGridItem(videoItem = video, onClick = {
+                            Toast.makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
                                 .show()
                         })
                     }
@@ -143,6 +190,7 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
 }
 
 @Composable
+<<<<<<< HEAD
 fun alphabetFilter(
     selectedLetter: String?,
     onLetterClick: (String) -> Unit,
@@ -155,10 +203,21 @@ fun alphabetFilter(
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.Center,
+=======
+fun alphabetFilter(selectedLetter: String?, onLetterClick: (String) -> Unit) {
+    val alphabet = ('A'..'Z').toList()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.Center
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
     ) {
         alphabet.forEach { letter ->
             Button(
                 onClick = { onLetterClick(letter.toString()) },
+<<<<<<< HEAD
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor =
@@ -178,6 +237,12 @@ fun alphabetFilter(
                                 MaterialTheme.colorScheme.onSurface
                             },
                     ),
+=======
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedLetter == letter.toString()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                    contentColor = if (selectedLetter == letter.toString()) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                ),
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
                 modifier = Modifier.padding(horizontal = 2.dp),
             ) {
                 Text(letter.toString())
@@ -187,15 +252,20 @@ fun alphabetFilter(
 }
 
 @Composable
+<<<<<<< HEAD
 fun videoListItem(
     videoItem: VideoItem,
     onClick: () -> Unit,
 ) {
+=======
+fun videoListItem(videoItem: VideoItem, onClick: () -> Unit) {
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
     // ... Nội dung hàm không đổi
 }
 
 // Thêm lại hàm VideoGridItem
 @Composable
+<<<<<<< HEAD
 fun videoGridItem(
     videoItem: VideoItem,
     onClick: () -> Unit,
@@ -206,6 +276,14 @@ fun videoGridItem(
                 .padding(8.dp)
                 .aspectRatio(0.8f)
                 .clickable(onClick = onClick),
+=======
+fun videoGridItem(videoItem: VideoItem, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .aspectRatio(0.8f)
+            .clickable(onClick = onClick),
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -213,10 +291,16 @@ fun videoGridItem(
                 model = videoItem.thumbnailUrl,
                 contentDescription = videoItem.title,
                 contentScale = ContentScale.Crop,
+<<<<<<< HEAD
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .weight(1f),
+=======
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+>>>>>>> e412f04 (feat: Add video list screen with search and filter)
             )
             Text(
                 text = videoItem.title,
