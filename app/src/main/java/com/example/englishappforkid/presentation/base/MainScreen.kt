@@ -29,6 +29,11 @@ fun mainScreen() {
             composable("story") { contentListScreen(navController) }
             composable("download") { /* downloadScreen(navController) */ }
             composable("profile") { profileScreen(navController) }
+            composable("edit_profile_screen") { /* Your Screen */ }
+            composable("notification_setup_screen") { /* Your Screen */ }
+            composable("term_policy_screen") { /* Your Screen */ }
+            composable("login_screen") { /* Login Screen */ }
+            composable("profile_detail_screen") { /* Profile Detail */ }
         }
     }
 }
