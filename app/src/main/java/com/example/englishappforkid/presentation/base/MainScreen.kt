@@ -1,4 +1,5 @@
 package com.example.englishappforkid.presentation.base
+
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -10,6 +11,7 @@ import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
+import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
 
 @Composable
 fun mainScreen() {
@@ -29,6 +31,12 @@ fun mainScreen() {
             composable("story") { contentListScreen(navController) }
             composable("download") { /* downloadScreen(navController) */ }
             composable("profile") { profileScreen(navController) }
+
+            // --- THÊM TUYẾN ĐƯỜNG MỚI CHO MÀN HÌNH VIDEO ---
+            composable("video_list") {
+                videoListScreen()
+            }
+            // ---------------------------------------------
         }
     }
 }

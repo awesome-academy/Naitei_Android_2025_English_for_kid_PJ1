@@ -2,6 +2,7 @@ package com.example.englishappforkid.presentation.screens.prehome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.LeaderboardEntry
-import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.boxFullname
 import com.example.englishappforkid.ui.theme.colorButtonSelected
@@ -80,6 +80,9 @@ fun preHomeScreenContent(
                     modifier = Modifier.size(36.dp),
                 )
             },
+            onClick = {
+                navController.navigate("video_list")
+            },
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -94,15 +97,13 @@ fun preHomeScreenContent(
                     modifier = Modifier.size(36.dp),
                 )
             },
+            onClick = {
+                // TODO: Thêm logic điều hướng cho mục "Song" sau này
+            },
         )
 
         Spacer(modifier = Modifier.height(40.dp))
-
         leaderboardSection(entries)
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        bottomNavBar(navController)
     }
 }
 
@@ -162,6 +163,7 @@ fun menuCard(
     title: String,
     backgroundColor: Color,
     icon: @Composable () -> Unit,
+    onClick: () -> Unit,
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -169,7 +171,8 @@ fun menuCard(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(70.dp),
+                .height(70.dp)
+                .clickable(onClick = onClick),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
