@@ -57,17 +57,20 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
     var selectedLetter by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
-    val filteredVideos = remember(videos, searchQuery, selectedLetter) {
-        val currentSelectedLetter = selectedLetter
-        videos.filter { video ->
-            val matchesSearch = video.title.contains(searchQuery, ignoreCase = true)
-            val matchesLetter = currentSelectedLetter == null || video.title.startsWith(
-                currentSelectedLetter,
-                ignoreCase = true
-            )
-            matchesSearch && matchesLetter
+    val filteredVideos =
+        remember(videos, searchQuery, selectedLetter) {
+            val currentSelectedLetter = selectedLetter
+            videos.filter { video ->
+                val matchesSearch = video.title.contains(searchQuery, ignoreCase = true)
+                val matchesLetter =
+                    currentSelectedLetter == null ||
+                        video.title.startsWith(
+                            currentSelectedLetter,
+                            ignoreCase = true,
+                        )
+                matchesSearch && matchesLetter
+            }
         }
-    }
 
     Scaffold(
         topBar = {
@@ -87,34 +90,36 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
                     IconButton(onClick = { viewModel.toggleView() }) {
                         Icon(
                             imageVector = if (isListView) Icons.Default.GridView else Icons.AutoMirrored.Filled.ViewList,
-                            contentDescription = "Switch View"
+                            contentDescription = "Switch View",
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                 placeholder = { Text("Search stories...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") }
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
             )
             alphabetFilter(
                 selectedLetter = selectedLetter,
                 onLetterClick = { letter ->
                     selectedLetter = if (selectedLetter == letter) null else letter
-                }
+                },
             )
             if (isListView) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoListItem(videoItem = video, onClick = {
-                            Toast.makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
+                            Toast
+                                .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
                                 .show()
                         })
                     }
@@ -122,11 +127,12 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoGridItem(videoItem = video, onClick = {
-                            Toast.makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
+                            Toast
+                                .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
                                 .show()
                         })
                     }
@@ -137,22 +143,41 @@ fun videoListScreen(viewModel: VideoListViewModel = viewModel()) {
 }
 
 @Composable
-fun alphabetFilter(selectedLetter: String?, onLetterClick: (String) -> Unit) {
+fun alphabetFilter(
+    selectedLetter: String?,
+    onLetterClick: (String) -> Unit,
+) {
     val alphabet = ('A'..'Z').toList()
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.Center
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.Center,
     ) {
         alphabet.forEach { letter ->
             Button(
                 onClick = { onLetterClick(letter.toString()) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedLetter == letter.toString()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                    contentColor = if (selectedLetter == letter.toString()) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor =
+                            if (selectedLetter ==
+                                letter.toString()
+                            ) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surface
+                            },
+                        contentColor =
+                            if (selectedLetter ==
+                                letter.toString()
+                            ) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
+                    ),
                 modifier = Modifier.padding(horizontal = 2.dp),
             ) {
                 Text(letter.toString())
@@ -162,18 +187,25 @@ fun alphabetFilter(selectedLetter: String?, onLetterClick: (String) -> Unit) {
 }
 
 @Composable
-fun videoListItem(videoItem: VideoItem, onClick: () -> Unit) {
+fun videoListItem(
+    videoItem: VideoItem,
+    onClick: () -> Unit,
+) {
     // ... Nội dung hàm không đổi
 }
 
 // Thêm lại hàm VideoGridItem
 @Composable
-fun videoGridItem(videoItem: VideoItem, onClick: () -> Unit) {
+fun videoGridItem(
+    videoItem: VideoItem,
+    onClick: () -> Unit,
+) {
     Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .aspectRatio(0.8f)
-            .clickable(onClick = onClick),
+        modifier =
+            Modifier
+                .padding(8.dp)
+                .aspectRatio(0.8f)
+                .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -181,9 +213,10 @@ fun videoGridItem(videoItem: VideoItem, onClick: () -> Unit) {
                 model = videoItem.thumbnailUrl,
                 contentDescription = videoItem.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
             )
             Text(
                 text = videoItem.title,
