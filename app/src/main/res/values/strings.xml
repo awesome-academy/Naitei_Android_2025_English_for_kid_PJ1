@@ -6,4 +6,10 @@
     <string name="hello">Hello</string>
     <string name="full_name">Full name</string>
     <string name="leaderboard">👑 Leaderboard</string>
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="notification_setup">Notification Setup</string>
+    <string name="term_policy"><![CDATA[Term & Policy]]></string>
+    <string name="log_out">Log out</string>
+    <string name="view_my_profile">View my profile</string>
 </resources>

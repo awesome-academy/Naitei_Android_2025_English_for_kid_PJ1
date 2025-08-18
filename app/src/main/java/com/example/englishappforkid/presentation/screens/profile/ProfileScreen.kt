@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,7 +65,7 @@ fun profileScreen(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = "Profile",
+                text = stringResource(R.string.profile),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -81,7 +82,7 @@ fun profileScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(36.dp))
 
         menuCard(
-            title = "Edit profile",
+            title = stringResource(R.string.edit_profile),
             backgroundColor = boxBackground,
             onClick = { navController.navigate("edit_profile_screen") },
         )
@@ -89,7 +90,7 @@ fun profileScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         menuCard(
-            title = "Notification setup",
+            title = stringResource(R.string.notification_setup),
             backgroundColor = boxBackground,
             onClick = { navController.navigate("notification_setup_screen") },
         )
@@ -97,7 +98,7 @@ fun profileScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         menuCard(
-            title = "Term & Policy",
+            title = stringResource(R.string.term_policy),
             backgroundColor = boxBackground,
             onClick = { navController.navigate("term_policy_screen") },
         )
@@ -105,7 +106,7 @@ fun profileScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(36.dp))
 
         logout(
-            title = "Log out",
+            title = stringResource(R.string.log_out),
             backgroundColor = Cowbell,
             onClick = {
                 navController.navigate("login_screen") {
@@ -143,8 +144,8 @@ fun nameSection(onClick: () -> Unit) {
                 Spacer(modifier = Modifier.width(24.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Full name", fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                    Text(text = "View my profile", color = Color.Blue, fontSize = 18.sp)
+                    Text(text = stringResource(R.string.full_name), fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    Text(text = stringResource(R.string.view_my_profile), color = Color.Blue, fontSize = 18.sp)
                 }
 
                 Icon(
