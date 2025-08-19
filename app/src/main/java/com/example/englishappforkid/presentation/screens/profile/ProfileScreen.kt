@@ -80,7 +80,6 @@ fun profileScreen(navController: NavHostController) {
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black,
-
             )
         }
 

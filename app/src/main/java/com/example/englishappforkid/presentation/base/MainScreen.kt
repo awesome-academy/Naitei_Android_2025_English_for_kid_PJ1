@@ -38,7 +38,6 @@ fun mainScreen() {
             composable(ScreenRoutes.TERM_POLICY) { /* Policy Screen */ }
             composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
             composable(ScreenRoutes.PROFILE_DETAIL) { profileDetailScreen(navController) }
-
         }
     }
 }
