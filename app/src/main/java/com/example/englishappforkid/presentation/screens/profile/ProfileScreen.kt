@@ -74,13 +74,13 @@ fun profileScreen(navController: NavHostController) {
                             navController.popBackStack()
                         },
             )
-
             // Tiêu đề nằm giữa
             Text(
                 text = stringResource(R.string.profile),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black,
+
             )
         }
 
