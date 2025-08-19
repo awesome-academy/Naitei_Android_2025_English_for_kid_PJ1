@@ -1,0 +1,13 @@
+package com.example.englishappforkid.presentation.base.navigation
+
+object ScreenRoutes {
+    const val HOME = "home"
+    const val STORY = "story"
+    const val DOWNLOAD = "download"
+    const val PROFILE = "profile"
+    const val EDIT_PROFILE = "edit_profile_screen"
+    const val NOTIFICATION_SETUP = "notification_setup_screen"
+    const val TERM_POLICY = "term_policy_screen"
+    const val LOGIN = "login_screen"
+    const val PROFILE_DETAIL = "profile_detail_screen"
+}
