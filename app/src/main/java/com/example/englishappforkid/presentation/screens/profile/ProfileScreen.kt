@@ -41,6 +41,7 @@ import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.englishAppForKidTheme
+import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 
 @Composable
 fun profileScreen(navController: NavHostController) {
@@ -75,7 +76,7 @@ fun profileScreen(navController: NavHostController) {
 
         nameSection(
             onClick = {
-                navController.navigate("profile_detail_screen")
+                navController.navigate(ScreenRoutes.PROFILE_DETAIL)
             },
         )
 
@@ -84,7 +85,7 @@ fun profileScreen(navController: NavHostController) {
         menuCard(
             title = stringResource(R.string.edit_profile),
             backgroundColor = boxBackground,
-            onClick = { navController.navigate("edit_profile_screen") },
+            onClick = { navController.navigate(ScreenRoutes.EDIT_PROFILE) },
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -92,7 +93,7 @@ fun profileScreen(navController: NavHostController) {
         menuCard(
             title = stringResource(R.string.notification_setup),
             backgroundColor = boxBackground,
-            onClick = { navController.navigate("notification_setup_screen") },
+            onClick = { navController.navigate(ScreenRoutes.NOTIFICATION_SETUP) },
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -100,7 +101,7 @@ fun profileScreen(navController: NavHostController) {
         menuCard(
             title = stringResource(R.string.term_policy),
             backgroundColor = boxBackground,
-            onClick = { navController.navigate("term_policy_screen") },
+            onClick = { navController.navigate(ScreenRoutes.TERM_POLICY) },
         )
 
         Spacer(modifier = Modifier.height(36.dp))
@@ -109,8 +110,8 @@ fun profileScreen(navController: NavHostController) {
             title = stringResource(R.string.log_out),
             backgroundColor = Cowbell,
             onClick = {
-                navController.navigate("login_screen") {
-                    popUpTo("profile_screen") { inclusive = true }
+                navController.navigate(ScreenRoutes.LOGIN) {
+                    popUpTo(ScreenRoutes.PROFILE) { inclusive = true }
                 }
             },
         )
