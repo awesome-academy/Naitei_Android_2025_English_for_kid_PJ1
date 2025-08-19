@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.LeaderboardEntry
+import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.boxFullname
 import com.example.englishappforkid.ui.theme.colorButtonSelected
@@ -81,7 +82,7 @@ fun preHomeScreenContent(
                 )
             },
             onClick = {
-                navController.navigate("video_list")
+                navController.navigate(ScreenRoutes.VIDEO_LIST)
             },
         )
 
