@@ -50,25 +50,37 @@ fun profileScreen(navController: NavHostController) {
             Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(24.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Header
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+            contentAlignment = Alignment.Center,
         ) {
+            // Back icon nằm bên trái
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = Color.Black,
-                modifier = Modifier.size(28.dp),
+                tint = Pink80,
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterStart)
+                        .size(28.dp)
+                        .clickable {
+                            navController.popBackStack()
+                        },
             )
-            Spacer(modifier = Modifier.width(16.dp))
+
+            // Tiêu đề nằm giữa
             Text(
                 text = stringResource(R.string.profile),
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black,
             )
         }
 

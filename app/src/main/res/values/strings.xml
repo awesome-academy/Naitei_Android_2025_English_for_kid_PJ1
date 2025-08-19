@@ -12,4 +12,16 @@
     <string name="term_policy"><![CDATA[Term & Policy]]></string>
     <string name="log_out">Log out</string>
     <string name="view_my_profile">View my profile</string>
+    <string name="change_password">Change Password</string>
+    <string name="my_profile">My profile</string>
+    <string name="once_everyday">Once everyday</string>
+    <string name="twice_a_day">Twice a day</string>
+    <string name="weekly">Weekly</string>
+    <string name="custom">Custom</string>
+    <string name="select_date">Select date</string>
+    <string name="complete">Complete</string>
+    <string name="ok">OK</string>
+    <string name="enter_date">Enter date</string>
+    <string name="cancel">Cancel</string>
+
 </resources>
