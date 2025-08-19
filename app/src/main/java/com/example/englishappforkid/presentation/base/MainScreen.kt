@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
+import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
@@ -24,19 +25,18 @@ fun mainScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = ScreenRoutes.HOME,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable("home") { preHomeScreen(navController) }
-            composable("story") { contentListScreen(navController) }
-            composable("download") { /* downloadScreen(navController) */ }
-            composable("profile") { profileScreen(navController) }
-
-            // --- THÊM TUYẾN ĐƯỜNG MỚI CHO MÀN HÌNH VIDEO ---
-            composable("video_list") {
-                videoListScreen()
-            }
-            // ---------------------------------------------
+            composable(ScreenRoutes.HOME) { preHomeScreen(navController) }
+            composable(ScreenRoutes.STORY) { contentListScreen(navController) }
+            composable(ScreenRoutes.DOWNLOAD) { /* downloadScreen(navController) */ }
+            composable(ScreenRoutes.PROFILE) { profileScreen(navController) }
+            composable(ScreenRoutes.EDIT_PROFILE) { /* Edit Profile Screen */ }
+            composable(ScreenRoutes.NOTIFICATION_SETUP) { /* Noti Setup Screen */ }
+            composable(ScreenRoutes.TERM_POLICY) { /* Policy Screen */ }
+            composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
+            composable(ScreenRoutes.PROFILE_DETAIL) { /* Profile Detail */ }
         }
     }
 }
