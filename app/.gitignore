@@ -11,3 +11,5 @@ local.properties
 
 # Google Services file
 google-services.json
+# Log files and system files
+*.log

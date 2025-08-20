@@ -10,4 +10,5 @@ object ScreenRoutes {
     const val TERM_POLICY = "term_policy_screen"
     const val LOGIN = "login_screen"
     const val PROFILE_DETAIL = "profile_detail_screen"
+    const val VIDEO_LIST = "video_list"
 }
