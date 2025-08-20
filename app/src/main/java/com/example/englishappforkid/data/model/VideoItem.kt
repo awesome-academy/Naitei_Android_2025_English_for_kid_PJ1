@@ -5,5 +5,5 @@ data class VideoItem(
     val title: String,
     val thumbnailUrl: String,
     val videoId: String,
-    val description: String
+    val description: String,
 )

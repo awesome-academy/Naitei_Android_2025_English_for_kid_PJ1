@@ -33,8 +33,9 @@ fun FullscreenVideo() {
                 useController = true
             }
         },
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black),
     )
 }

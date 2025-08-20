@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.englishappforkid.presentation.screens.playvideo.VideoScreen
+import com.example.englishappforkid.presentation.playvideo.videoScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
 
@@ -14,7 +14,6 @@ import com.example.englishappforkid.presentation.screens.videolist.videoListScre
 fun appNavGraph(navController: NavHostController) {
     // startDestination là màn hình đầu tiên của ứng dụng
     NavHost(navController = navController, startDestination = "home") {
-
         // Màn hình chào mừng
         composable("home") { preHomeScreen(navController) }
 
@@ -24,13 +23,13 @@ fun appNavGraph(navController: NavHostController) {
         // Màn hình phát video
         composable(
             route = "video_player/{videoId}",
-            arguments = listOf(navArgument("videoId") { type = NavType.StringType })
+            arguments = listOf(navArgument("videoId") { type = NavType.StringType }),
         ) { backStackEntry ->
             val videoId = backStackEntry.arguments?.getString("videoId")
             if (videoId != null) {
-                VideoScreen(
+                videoScreen(
                     videoId = videoId,
-                    navController = navController
+                    navController = navController,
                 )
             }
         }

@@ -4,18 +4,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
+import com.example.englishappforkid.presentation.playvideo.videoScreen
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
 import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
-import com.example.englishappforkid.presentation.screens.playvideo.VideoScreen
+
 @Composable
 fun mainScreen() {
     val navController = rememberNavController()
@@ -43,13 +44,13 @@ fun mainScreen() {
 
             composable(
                 route = "video_player/{videoId}", // Bạn nên thêm route này vào ScreenRoutes
-                arguments = listOf(navArgument("videoId") { type = NavType.StringType })
+                arguments = listOf(navArgument("videoId") { type = NavType.StringType }),
             ) { backStackEntry ->
                 val videoId = backStackEntry.arguments?.getString("videoId")
                 if (videoId != null) {
-                    VideoScreen(
+                    videoScreen(
                         videoId = videoId,
-                        navController = navController
+                        navController = navController,
                     )
                 }
             }
