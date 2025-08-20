@@ -23,4 +23,6 @@
     <string name="ok">OK</string>
     <string name="enter_date">Enter date</string>
     <string name="cancel">Cancel</string>
+    <string name="short_stories">Short Stories</string>
+    <string name="search_stories">Search stories...</string>
 </resources>

@@ -14,6 +14,7 @@ import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.profile.profileDetailScreen
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
+import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
 
 @Composable
 fun mainScreen() {
@@ -38,6 +39,7 @@ fun mainScreen() {
             composable(ScreenRoutes.TERM_POLICY) { /* Policy Screen */ }
             composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
             composable(ScreenRoutes.PROFILE_DETAIL) { profileDetailScreen(navController) }
+            composable(ScreenRoutes.VIDEO_LIST) { videoListScreen(navController = navController) }
         }
     }
 }
