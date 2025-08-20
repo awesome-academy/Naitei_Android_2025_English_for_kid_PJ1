@@ -8,13 +8,29 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
+import com.example.englishappforkid.presentation.playvideo.videoScreen
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
 
 @Composable
 fun appNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { preHomeScreen(navController) }
         composable("story") { contentListScreen(navController) }
+        composable(
+            route = "video_player/{videoId}",
+            arguments = listOf(navArgument("videoId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val videoId = backStackEntry.arguments?.getString("videoId")
+            if (videoId != null) {
+                videoScreen(
+                    videoId = videoId,
+                    navController = navController,
+                )
+            }
+        }
     }
+
 }
 
 @Preview(showBackground = true)

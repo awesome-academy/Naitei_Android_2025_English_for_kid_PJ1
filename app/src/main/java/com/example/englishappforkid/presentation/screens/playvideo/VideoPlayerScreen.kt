@@ -1,0 +1,227 @@
+package com.example.englishappforkid.presentation.playvideo // <-- Sửa lại package cho đúng
+
+// Thêm import này
+import androidx.activity.compose.BackHandler
+import android.os.Environment
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.ui.PlayerView
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import com.example.englishappforkid.data.VideoDataSource
+import com.example.englishappforkid.data.model.VideoItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
+import com.example.englishappforkid.presentation.screens.playvideo.formatTime
+import androidx.compose.foundation.layout.PaddingValues
+
+@Composable
+fun videoScreen(
+    videoId: String,
+    navController: NavHostController,
+    playerViewModel: VideoPlayerViewModel = viewModel()
+) {
+    val context = LocalContext.current
+    val videoItem = remember(videoId) { VideoDataSource.getVideoById(videoId) }
+    val scope = rememberCoroutineScope()
+
+    var isFullscreen by remember { mutableStateOf(false) }
+
+    if (videoItem == null) {
+        // ... (code xử lý video null)
+        return
+    }
+
+    playerViewModel.initializePlayer(context)
+    val exoPlayer = playerViewModel.exoPlayer
+
+    DisposableEffect(videoId) {
+        // ... (code DisposableEffect giữ nguyên)
+        playerViewModel.playVideo(videoItem.videoId)
+        onDispose { exoPlayer.pause() }
+    }
+
+    // ... (code quản lý state isPlaying, currentPosition, duration giữ nguyên)
+    var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
+    var currentPosition by remember { mutableStateOf(0L) }
+    var duration by remember { mutableStateOf(0L) }
+    DisposableEffect(exoPlayer) {
+        val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(isPlayingValue: Boolean) {
+                isPlaying = isPlayingValue
+            }
+            override fun onPlayerError(error: PlaybackException) {
+                Log.e("VideoPlayer", "Player Error: ", error)
+            }
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    duration = exoPlayer.duration
+                }
+            }
+        }
+        exoPlayer.addListener(listener)
+        onDispose { exoPlayer.removeListener(listener) }
+    }
+    LaunchedEffect(isPlaying) {
+        while (isPlaying) {
+            currentPosition = exoPlayer.currentPosition
+            delay(500)
+        }
+    }
+
+
+    // ================= SỬA LỖI TẠI ĐÂY =================
+    // Can thiệp vào hành vi của nút back trên hệ thống
+    // BackHandler chỉ được bật (enabled) khi isFullscreen là true
+    BackHandler(enabled = isFullscreen) {
+        // Nếu đang ở chế độ fullscreen, nút back sẽ chỉ thoát fullscreen
+        isFullscreen = false
+    }
+    // ====================================================
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isFullscreen) {
+            // Giao diện Fullscreen
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+                AndroidView(
+                    factory = { PlayerView(it).apply { useController = false } },
+                    modifier = Modifier.fillMaxSize(),
+                    update = { it.player = exoPlayer }
+                )
+                IconButton(
+                    onClick = { isFullscreen = false },
+                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
+                ) {
+                    Icon(Icons.Default.FullscreenExit, contentDescription = "Exit Fullscreen", tint = Color.White)
+                }
+            }
+        } else {
+            // Giao diện bình thường (code giữ nguyên không đổi)
+            val suggestedVideos = remember(videoId) {
+                VideoDataSource.videoStories.filter { it.id != videoId }.shuffled().take(3)
+            }
+            Column(
+                modifier = Modifier.fillMaxSize().background(Color.White).padding(8.dp),
+            ) {
+                AndroidView(
+                    factory = { PlayerView(it).apply { useController = false } },
+                    modifier = Modifier.fillMaxWidth().height(220.dp),
+                    update = { it.player = exoPlayer }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Slider(
+                    value = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f,
+                    onValueChange = { value ->
+                        val newPosition = (value * duration).toLong()
+                        exoPlayer.seekTo(newPosition)
+                        currentPosition = newPosition
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text(text = "${formatTime(currentPosition)} / ${formatTime(duration)}")
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { if (isPlaying) exoPlayer.pause() else exoPlayer.play() }) {
+                        Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, "Play/Pause")
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { /* Logic tải video */ }) {
+                        Icon(Icons.Default.Download, contentDescription = "Download")
+                    }
+                    IconButton(onClick = { isFullscreen = true }) {
+                        Icon(Icons.Default.Fullscreen, contentDescription = "Fullscreen")
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(
+                    modifier = Modifier.fillMaxWidth().background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp)).padding(12.dp),
+                ) {
+                    Text(text = videoItem.description, color = Color.Black)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Next Videos",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                )
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 8.dp),
+                ) {
+                    items(suggestedVideos, key = { it.id }) { suggestion ->
+                        SuggestedVideoItem(
+                            videoItem = suggestion,
+                            onClick = { navController.navigate("video_player/${suggestion.id}") },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun SuggestedVideoItem(
+    videoItem: VideoItem,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // ... (Code của SuggestedVideoItem giữ nguyên)
+    Card(
+        modifier = modifier.width(160.dp).padding(end = 8.dp).clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(2.dp),
+    ) {
+        Column {
+            AsyncImage(
+                model = videoItem.thumbnailUrl,
+                contentDescription = videoItem.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth().height(90.dp),
+            )
+            Text(
+                text = videoItem.title,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(8.dp),
+            )
+        }
+    }
+}
