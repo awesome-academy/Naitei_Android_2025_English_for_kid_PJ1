@@ -1,5 +1,7 @@
 package com.example.englishappforkid.presentation.screens.notification
 
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,10 +50,36 @@ import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.englishAppForKidTheme
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun notiSetup(navController: NavHostController) {
-    var selectedFrequency by remember { mutableStateOf("Once everyday") }
+    val context = LocalContext.current
+    val defaultFrequency = stringResource(R.string.once_everyday)
+    var selectedFrequency by remember { mutableStateOf(defaultFrequency) }
+    var fromDate by remember { mutableStateOf("") }
+    var toDate by remember { mutableStateOf("") }
+
+    val dateFormatter =
+        remember {
+            SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        }
+
+    fun showDatePicker(onDateSelected: (String) -> Unit) {
+        val calendar = Calendar.getInstance()
+        DatePickerDialog(
+            context,
+            { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+                calendar.set(year, month, dayOfMonth)
+                onDateSelected(dateFormatter.format(calendar.time))
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH),
+        ).show()
+    }
 
     Column(
         modifier =
@@ -67,7 +96,7 @@ fun notiSetup(navController: NavHostController) {
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.back),
                 modifier =
                     Modifier
                         .align(Alignment.CenterStart)
@@ -112,7 +141,7 @@ fun notiSetup(navController: NavHostController) {
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.ic_calendar),
-                        contentDescription = "Calendar",
+                        contentDescription = stringResource(R.string.calendar_icon),
                         tint = Color.Black,
                     )
                 }
@@ -120,23 +149,39 @@ fun notiSetup(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 OutlinedTextField(
-                    value = "",
+                    value = fromDate,
                     onValueChange = {},
-                    placeholder = { Text("mm/dd/yyyy") },
-                    label = { Text("From") },
+                    placeholder = { Text(stringResource(R.string.placeholder_date)) },
+                    label = { Text(stringResource(R.string.label_from)) },
+                    readOnly = true,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                showDatePicker { selected ->
+                                    fromDate = selected
+                                }
+                            },
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(36.dp))
 
                 OutlinedTextField(
-                    value = "",
+                    value = toDate,
                     onValueChange = {},
-                    placeholder = { Text("mm/dd/yyyy") },
-                    label = { Text("To") },
+                    placeholder = { Text(stringResource(R.string.placeholder_date)) },
+                    label = { Text(stringResource(R.string.label_to)) },
+                    readOnly = true,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                showDatePicker { selected ->
+                                    toDate = selected
+                                }
+                            },
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -163,7 +208,6 @@ fun notiSetup(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Frequency Dropdown
         frequencyDropdown(
             selectedOption = selectedFrequency,
             onOptionSelected = { selectedFrequency = it },
@@ -171,20 +215,19 @@ fun notiSetup(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Complete Button
         Button(
             onClick = { /* TODO */ },
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(80.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Cowbell),
             shape = RoundedCornerShape(16.dp),
         ) {
             Text(
                 text = stringResource(R.string.complete),
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
+                fontSize = 24.sp,
                 color = Color.Black,
             )
         }

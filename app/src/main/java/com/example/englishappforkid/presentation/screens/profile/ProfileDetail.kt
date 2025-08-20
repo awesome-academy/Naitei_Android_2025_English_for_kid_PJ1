@@ -41,13 +41,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.englishappforkid.R
+import com.example.englishappforkid.data.model.UserProfile
 import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
-import com.example.englishappforkid.ui.theme.englishAppForKidTheme
 
 @Composable
-fun profileDetailScreen(navController: NavHostController) {
+fun profileDetailScreen(
+    navController: NavHostController,
+    userProfile: UserProfile,
+) {
     Column(
         modifier =
             Modifier
@@ -56,7 +59,7 @@ fun profileDetailScreen(navController: NavHostController) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Back Button + Title
+        // Back + Title
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
@@ -100,7 +103,7 @@ fun profileDetailScreen(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Image(
-                    painter = painterResource(id = R.drawable.person_1),
+                    painter = painterResource(id = userProfile.avatarResId),
                     contentDescription = "Avatar",
                     modifier =
                         Modifier
@@ -110,7 +113,7 @@ fun profileDetailScreen(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.full_name),
+                    text = userProfile.fullName,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
                 )
@@ -128,17 +131,14 @@ fun profileDetailScreen(navController: NavHostController) {
             colors = CardDefaults.cardColors(containerColor = boxBackground),
             elevation = CardDefaults.cardElevation(4.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-            ) {
-                profileInfoRow(label = "Address", value = "Thai Nguyen")
+            Column(modifier = Modifier.padding(16.dp)) {
+                profileInfoRow(label = "Address", value = userProfile.address)
                 Spacer(modifier = Modifier.height(12.dp))
-                profileInfoRow(label = "Nickname", value = "Fox")
+                profileInfoRow(label = "Nickname", value = userProfile.nickname)
                 Spacer(modifier = Modifier.height(12.dp))
-                profileInfoRow(label = "Old", value = "16 years old")
+                profileInfoRow(label = "Age", value = userProfile.age)
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Rating
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -157,9 +157,8 @@ fun profileDetailScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Change Password Button
         Button(
-            onClick = { /* TODO: Handle password change */ },
+            onClick = { /* TODO: xử lý thay đổi mật khẩu */ },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -222,8 +221,14 @@ fun profileInfoRow(
 @Preview(showBackground = true)
 @Composable
 fun previewProfileDetailScreen() {
-    englishAppForKidTheme {
-        val navController = rememberNavController()
-        profileDetailScreen(navController)
-    }
+    val fakeUser =
+        UserProfile(
+            fullName = "Nguyen Van A",
+            address = "Thai Nguyen",
+            nickname = "Fox",
+            age = "16 years old",
+            avatarResId = R.drawable.person_1,
+        )
+    val navController = rememberNavController()
+    profileDetailScreen(navController = navController, userProfile = fakeUser)
 }

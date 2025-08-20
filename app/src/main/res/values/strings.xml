@@ -23,4 +23,10 @@
     <string name="ok">OK</string>
     <string name="enter_date">Enter date</string>
     <string name="cancel">Cancel</string>
+    <string name="placeholder_date">mm/dd/yyyy</string>
+    <string name="label_from">From</string>
+    <string name="label_to">To</string>
+    <string name="calendar_icon">Calendar Icon</string>
+    <string name="back">Back</string>
+
 </resources>
