@@ -22,6 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".presentation.screens.playvideo.FullscreenActivity"
+            android:exported="false"
+            android:theme="@style/Theme.EnglishAppforKid">
+        </activity>
     </application>
 
 </manifest>

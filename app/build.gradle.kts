@@ -61,6 +61,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation("androidx.media3:media3-exoplayer:1.8.0")
+    implementation("androidx.media3:media3-ui:1.8.0")
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
 

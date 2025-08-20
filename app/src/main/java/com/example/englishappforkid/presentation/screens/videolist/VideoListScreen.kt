@@ -51,10 +51,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.VideoItem
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,6 +129,7 @@ fun videoListScreen(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoListItem(videoItem = video, onClick = {
+                            navController.navigate("video_player/${video.id}")
                             Toast
                                 .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
                                 .show()
@@ -142,6 +143,7 @@ fun videoListScreen(
                 ) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoGridItem(videoItem = video, onClick = {
+                            navController.navigate("video_player/${video.id}")
                             Toast
                                 .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
                                 .show()

@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.englishappforkid.presentation.base.mainScreen
 import com.example.englishappforkid.ui.theme.englishAppForKidTheme
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
