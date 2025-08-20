@@ -7,17 +7,28 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.englishappforkid.R
+import com.example.englishappforkid.data.model.UserProfile
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
+import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
+import com.example.englishappforkid.presentation.screens.profile.profileDetailScreen
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
 import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
 
 @Composable
 fun mainScreen() {
     val navController = rememberNavController()
-
+    val fakeUser =
+        UserProfile(
+            fullName = "Nguyen Van A",
+            address = "Thai Nguyen",
+            nickname = "Fox",
+            age = "16 years old",
+            avatarResId = R.drawable.person_1,
+        )
     Scaffold(
         bottomBar = {
             bottomNavBar(navController = navController)
@@ -33,11 +44,11 @@ fun mainScreen() {
             composable(ScreenRoutes.DOWNLOAD) { /* downloadScreen(navController) */ }
             composable(ScreenRoutes.PROFILE) { profileScreen(navController) }
             composable(ScreenRoutes.EDIT_PROFILE) { /* Edit Profile Screen */ }
-            composable(ScreenRoutes.NOTIFICATION_SETUP) { /* Noti Setup Screen */ }
+            composable(ScreenRoutes.NOTIFICATION_SETUP) { notiSetup(navController) }
             composable(ScreenRoutes.TERM_POLICY) { /* Policy Screen */ }
             composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
-            composable(ScreenRoutes.PROFILE_DETAIL) { /* Profile Detail */ }
             composable(ScreenRoutes.VIDEO_LIST) { videoListScreen(navController = navController) }
+            composable(ScreenRoutes.PROFILE_DETAIL) { profileDetailScreen(navController, userProfile = fakeUser) }
         }
     }
 }
