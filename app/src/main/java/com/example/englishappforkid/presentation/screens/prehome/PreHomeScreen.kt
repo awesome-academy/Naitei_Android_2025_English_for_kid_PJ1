@@ -99,7 +99,7 @@ fun preHomeScreenContent(
                 )
             },
             onClick = {
-                // TODO: Thêm logic điều hướng cho mục "Song" sau này
+                navController.navigate(ScreenRoutes.SONG_LIST)
             },
         )
 

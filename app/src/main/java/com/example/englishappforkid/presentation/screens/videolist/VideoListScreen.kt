@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.GridView
@@ -87,6 +88,14 @@ fun videoListScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.short_stories)) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                        )
+                    }
+                },
                 actions = {
                     // Nút xóa bộ lọc
                     if (searchQuery.isNotEmpty() || selectedLetter != null) {
@@ -237,7 +246,6 @@ fun videoListItem(
     }
 }
 
-// Thêm lại hàm VideoGridItem
 @Composable
 fun videoGridItem(
     videoItem: VideoItem,
