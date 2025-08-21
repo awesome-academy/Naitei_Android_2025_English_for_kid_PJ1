@@ -11,4 +11,5 @@ object ScreenRoutes {
     const val LOGIN = "login_screen"
     const val PROFILE_DETAIL = "profile_detail_screen"
     const val VIDEO_LIST = "video_list"
+    const val SONG_LIST = "song_list"
 }
