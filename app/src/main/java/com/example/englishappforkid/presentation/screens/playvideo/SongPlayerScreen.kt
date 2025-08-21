@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import kotlinx.coroutines.delay
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
@@ -56,6 +55,7 @@ import coil.compose.AsyncImage
 import com.example.englishappforkid.data.SongDataSource
 import com.example.englishappforkid.data.model.VideoItem
 import com.example.englishappforkid.presentation.screens.playvideo.formatTime
+import kotlinx.coroutines.delay
 
 // Đổi tên composable để rõ ràng hơn
 @Composable
@@ -208,7 +208,7 @@ fun songScreen(
                 ) {
                     items(suggestedSongs, key = { it.id }) { suggestion ->
                         // SỬA LỖI 2 và 3: Gọi đúng tên composable và route
-                        SuggestedSongItem(
+                        suggestedSongItem(
                             videoItem = suggestion,
                             onClick = { navController.navigate("song_player/${suggestion.id}") },
                         )
@@ -221,7 +221,7 @@ fun songScreen(
 
 // Đổi tên composable cho thống nhất
 @Composable
-fun SuggestedSongItem(
+fun suggestedSongItem(
     videoItem: VideoItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

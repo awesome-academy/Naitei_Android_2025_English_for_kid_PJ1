@@ -4,13 +4,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.UserProfile
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
+import com.example.englishappforkid.presentation.playvideo.songScreen
+import com.example.englishappforkid.presentation.playvideo.videoScreen
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
@@ -18,10 +22,6 @@ import com.example.englishappforkid.presentation.screens.profile.profileDetailSc
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
 import com.example.englishappforkid.presentation.screens.songlist.songListScreen
 import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
-import com.example.englishappforkid.presentation.playvideo.songScreen
-import com.example.englishappforkid.presentation.playvideo.videoScreen
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 
 @Composable
 fun mainScreen() {

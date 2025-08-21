@@ -57,10 +57,10 @@ fun songListScreen(
                 val matchesSearch = song.title.contains(searchQuery, ignoreCase = true)
                 val matchesLetter =
                     currentSelectedLetter == null ||
-                            song.title.startsWith(
-                                currentSelectedLetter,
-                                ignoreCase = true,
-                            )
+                        song.title.startsWith(
+                            currentSelectedLetter,
+                            ignoreCase = true,
+                        )
                 matchesSearch && matchesLetter
             }
         }
