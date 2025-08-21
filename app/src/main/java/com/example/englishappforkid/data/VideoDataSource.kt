@@ -16,6 +16,7 @@ object VideoDataSource {
                 description =
                     "The three bears eat hot cereal called 'porridge' for breakfast. " +
                         "What do you usually have for breakfast? Tell us about it!",
+
             ),
             VideoItem(
                 id = UUID.randomUUID().toString(),
@@ -211,6 +212,7 @@ object VideoDataSource {
                 description =
                     "Hairy Henry's friends give him some really special birthday presents. " +
                         "What was your most special birthday present? Tell us about it!",
+
             ),
         )
 

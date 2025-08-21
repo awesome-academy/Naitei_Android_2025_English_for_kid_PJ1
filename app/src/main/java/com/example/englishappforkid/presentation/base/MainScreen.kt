@@ -15,6 +15,7 @@ import com.example.englishappforkid.presentation.playvideo.videoScreen
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
+import com.example.englishappforkid.presentation.screens.songlist.songListScreen
 import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
 
 @Composable
@@ -41,6 +42,7 @@ fun mainScreen() {
             composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
             composable(ScreenRoutes.PROFILE_DETAIL) { /* Profile Detail */ }
             composable(ScreenRoutes.VIDEO_LIST) { videoListScreen(navController = navController) }
+
             composable(
                 route = "video_player/{videoId}", // Bạn nên thêm route này vào ScreenRoutes
                 arguments = listOf(navArgument("videoId") { type = NavType.StringType }),
@@ -53,6 +55,9 @@ fun mainScreen() {
                     )
                 }
             }
+            composable(ScreenRoutes.SONG_LIST) { songListScreen(navController = navController) }
+            composable(ScreenRoutes.PROFILE_DETAIL) { profileDetailScreen(navController, userProfile = fakeUser) }
+
         }
     }
 }
