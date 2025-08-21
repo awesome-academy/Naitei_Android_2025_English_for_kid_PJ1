@@ -1,20 +1,45 @@
 package com.example.englishappforkid.presentation.playvideo // <-- Sửa lại package cho đúng
 
 // Thêm import này
-import androidx.activity.compose.BackHandler
-import android.os.Environment
 import android.util.Log
-import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,21 +56,14 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.englishappforkid.data.VideoDataSource
 import com.example.englishappforkid.data.model.VideoItem
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
 import com.example.englishappforkid.presentation.screens.playvideo.formatTime
-import androidx.compose.foundation.layout.PaddingValues
+import kotlinx.coroutines.delay
 
 @Composable
 fun videoScreen(
     videoId: String,
     navController: NavHostController,
-    playerViewModel: VideoPlayerViewModel = viewModel()
+    playerViewModel: VideoPlayerViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val videoItem = remember(videoId) { VideoDataSource.getVideoById(videoId) }
@@ -72,19 +90,22 @@ fun videoScreen(
     var currentPosition by remember { mutableStateOf(0L) }
     var duration by remember { mutableStateOf(0L) }
     DisposableEffect(exoPlayer) {
-        val listener = object : Player.Listener {
-            override fun onIsPlayingChanged(isPlayingValue: Boolean) {
-                isPlaying = isPlayingValue
-            }
-            override fun onPlayerError(error: PlaybackException) {
-                Log.e("VideoPlayer", "Player Error: ", error)
-            }
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY) {
-                    duration = exoPlayer.duration
+        val listener =
+            object : Player.Listener {
+                override fun onIsPlayingChanged(isPlayingValue: Boolean) {
+                    isPlaying = isPlayingValue
+                }
+
+                override fun onPlayerError(error: PlaybackException) {
+                    Log.e("VideoPlayer", "Player Error: ", error)
+                }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    if (playbackState == Player.STATE_READY) {
+                        duration = exoPlayer.duration
+                    }
                 }
             }
-        }
         exoPlayer.addListener(listener)
         onDispose { exoPlayer.removeListener(listener) }
     }
@@ -94,7 +115,6 @@ fun videoScreen(
             delay(500)
         }
     }
-
 
     // ================= SỬA LỖI TẠI ĐÂY =================
     // Can thiệp vào hành vi của nút back trên hệ thống
@@ -112,27 +132,31 @@ fun videoScreen(
                 AndroidView(
                     factory = { PlayerView(it).apply { useController = false } },
                     modifier = Modifier.fillMaxSize(),
-                    update = { it.player = exoPlayer }
+                    update = { it.player = exoPlayer },
                 )
                 IconButton(
                     onClick = { isFullscreen = false },
-                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
+                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
                 ) {
                     Icon(Icons.Default.FullscreenExit, contentDescription = "Exit Fullscreen", tint = Color.White)
                 }
             }
         } else {
             // Giao diện bình thường (code giữ nguyên không đổi)
-            val suggestedVideos = remember(videoId) {
-                VideoDataSource.videoStories.filter { it.id != videoId }.shuffled().take(3)
-            }
+            val suggestedVideos =
+                remember(videoId) {
+                    VideoDataSource.videoStories
+                        .filter { it.id != videoId }
+                        .shuffled()
+                        .take(3)
+                }
             Column(
                 modifier = Modifier.fillMaxSize().background(Color.White).padding(8.dp),
             ) {
                 AndroidView(
                     factory = { PlayerView(it).apply { useController = false } },
                     modifier = Modifier.fillMaxWidth().height(220.dp),
-                    update = { it.player = exoPlayer }
+                    update = { it.player = exoPlayer },
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -150,7 +174,7 @@ fun videoScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     Text(text = "${formatTime(currentPosition)} / ${formatTime(duration)}")
                     Spacer(modifier = Modifier.weight(1f))
@@ -185,7 +209,7 @@ fun videoScreen(
                     contentPadding = PaddingValues(horizontal = 8.dp),
                 ) {
                     items(suggestedVideos, key = { it.id }) { suggestion ->
-                        SuggestedVideoItem(
+                        suggestedVideoItem(
                             videoItem = suggestion,
                             onClick = { navController.navigate("video_player/${suggestion.id}") },
                         )
@@ -196,9 +220,8 @@ fun videoScreen(
     }
 }
 
-
 @Composable
-fun SuggestedVideoItem(
+fun suggestedVideoItem(
     videoItem: VideoItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

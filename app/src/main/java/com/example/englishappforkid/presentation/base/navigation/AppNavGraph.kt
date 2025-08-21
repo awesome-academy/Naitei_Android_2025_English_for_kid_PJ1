@@ -3,14 +3,14 @@ package com.example.englishappforkid.presentation.base.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.englishappforkid.presentation.playvideo.videoScreen
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
-import com.example.englishappforkid.presentation.playvideo.videoScreen
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
 
 @Composable
 fun appNavGraph(navController: NavHostController) {
@@ -30,7 +30,6 @@ fun appNavGraph(navController: NavHostController) {
             }
         }
     }
-
 }
 
 @Preview(showBackground = true)

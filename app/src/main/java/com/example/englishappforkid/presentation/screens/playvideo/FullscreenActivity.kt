@@ -16,13 +16,13 @@ class FullscreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FullscreenVideo()
+            fullscreenVideo()
         }
     }
 }
 
 @Composable
-fun FullscreenVideo() {
+fun fullscreenVideo() {
     // Lấy trình phát đang hoạt động từ PlayerManager
     val exoPlayer = remember { PlayerManager.currentPlayer }
 

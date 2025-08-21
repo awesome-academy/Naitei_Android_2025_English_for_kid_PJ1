@@ -75,10 +75,10 @@ fun videoListScreen(
                 val matchesSearch = video.title.contains(searchQuery, ignoreCase = true)
                 val matchesLetter =
                     currentSelectedLetter == null ||
-                            video.title.startsWith(
-                                currentSelectedLetter,
-                                ignoreCase = true,
-                            )
+                        video.title.startsWith(
+                            currentSelectedLetter,
+                            ignoreCase = true,
+                        )
                 matchesSearch && matchesLetter
             }
         }

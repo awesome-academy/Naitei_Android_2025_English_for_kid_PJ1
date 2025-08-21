@@ -21,10 +21,12 @@ class VideoPlayerViewModel : ViewModel() {
         // Kiểm tra xem video đang phát có phải là video mới không
         val currentMediaId = exoPlayer.currentMediaItem?.mediaId
         if (currentMediaId != uri) {
-            val mediaItem = MediaItem.Builder()
-                .setUri(uri)
-                .setMediaId(uri) // Dùng uri làm id để so sánh
-                .build()
+            val mediaItem =
+                MediaItem
+                    .Builder()
+                    .setUri(uri)
+                    .setMediaId(uri) // Dùng uri làm id để so sánh
+                    .build()
             exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
         }
