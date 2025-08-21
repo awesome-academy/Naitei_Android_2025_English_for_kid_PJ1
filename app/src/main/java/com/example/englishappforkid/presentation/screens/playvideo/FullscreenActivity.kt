@@ -23,7 +23,6 @@ class FullscreenActivity : ComponentActivity() {
 
 @Composable
 fun fullscreenVideo() {
-    // Lấy trình phát đang hoạt động từ PlayerManager
     val exoPlayer = remember { PlayerManager.currentPlayer }
 
     AndroidView(

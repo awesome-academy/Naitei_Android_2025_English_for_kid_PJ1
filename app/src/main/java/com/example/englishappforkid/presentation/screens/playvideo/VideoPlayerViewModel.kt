@@ -6,7 +6,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 
 class VideoPlayerViewModel : ViewModel() {
-    // Giữ instance của ExoPlayer trong ViewModel
     lateinit var exoPlayer: ExoPlayer
         private set
 
@@ -18,7 +17,6 @@ class VideoPlayerViewModel : ViewModel() {
     }
 
     fun playVideo(uri: String) {
-        // Kiểm tra xem video đang phát có phải là video mới không
         val currentMediaId = exoPlayer.currentMediaItem?.mediaId
         if (currentMediaId != uri) {
             val mediaItem =
@@ -33,8 +31,6 @@ class VideoPlayerViewModel : ViewModel() {
         exoPlayer.playWhenReady = true
     }
 
-    // onCleared được gọi tự động khi ViewModel bị hủy,
-    // đây là nơi an toàn nhất để giải phóng tài nguyên của player.
     override fun onCleared() {
         super.onCleared()
         if (::exoPlayer.isInitialized) {

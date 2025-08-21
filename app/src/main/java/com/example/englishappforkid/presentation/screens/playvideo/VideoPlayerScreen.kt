@@ -1,6 +1,5 @@
 package com.example.englishappforkid.presentation.playvideo // <-- Sửa lại package cho đúng
 
-// Thêm import này
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -72,7 +71,6 @@ fun videoScreen(
     var isFullscreen by remember { mutableStateOf(false) }
 
     if (videoItem == null) {
-        // ... (code xử lý video null)
         return
     }
 
@@ -80,12 +78,10 @@ fun videoScreen(
     val exoPlayer = playerViewModel.exoPlayer
 
     DisposableEffect(videoId) {
-        // ... (code DisposableEffect giữ nguyên)
         playerViewModel.playVideo(videoItem.videoId)
         onDispose { exoPlayer.pause() }
     }
 
-    // ... (code quản lý state isPlaying, currentPosition, duration giữ nguyên)
     var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
     var currentPosition by remember { mutableStateOf(0L) }
     var duration by remember { mutableStateOf(0L) }
@@ -116,14 +112,10 @@ fun videoScreen(
         }
     }
 
-    // ================= SỬA LỖI TẠI ĐÂY =================
-    // Can thiệp vào hành vi của nút back trên hệ thống
-    // BackHandler chỉ được bật (enabled) khi isFullscreen là true
     BackHandler(enabled = isFullscreen) {
         // Nếu đang ở chế độ fullscreen, nút back sẽ chỉ thoát fullscreen
         isFullscreen = false
     }
-    // ====================================================
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (isFullscreen) {
@@ -142,7 +134,6 @@ fun videoScreen(
                 }
             }
         } else {
-            // Giao diện bình thường (code giữ nguyên không đổi)
             val suggestedVideos =
                 remember(videoId) {
                     VideoDataSource.videoStories
@@ -226,7 +217,6 @@ fun suggestedVideoItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // ... (Code của SuggestedVideoItem giữ nguyên)
     Card(
         modifier = modifier.width(160.dp).padding(end = 8.dp).clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(2.dp),
