@@ -57,10 +57,10 @@ fun songListScreen(
                 val matchesSearch = song.title.contains(searchQuery, ignoreCase = true)
                 val matchesLetter =
                     currentSelectedLetter == null ||
-                        song.title.startsWith(
-                            currentSelectedLetter,
-                            ignoreCase = true,
-                        )
+                            song.title.startsWith(
+                                currentSelectedLetter,
+                                ignoreCase = true,
+                            )
                 matchesSearch && matchesLetter
             }
         }
@@ -122,6 +122,8 @@ fun songListScreen(
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(filteredSongs, key = { it.id }) { song ->
                         videoListItem(videoItem = song, onClick = {
+                            // SỬA LỖI Ở ĐÂY
+                            navController.navigate("song_player/${song.id}")
                             Toast
                                 .makeText(context, "Playing ${song.title}", Toast.LENGTH_SHORT)
                                 .show()
@@ -135,6 +137,8 @@ fun songListScreen(
                 ) {
                     items(filteredSongs, key = { it.id }) { song ->
                         videoGridItem(videoItem = song, onClick = {
+                            // SỬA LỖI Ở ĐÂY
+                            navController.navigate("song_player/${song.id}")
                             Toast
                                 .makeText(context, "Playing ${song.title}", Toast.LENGTH_SHORT)
                                 .show()

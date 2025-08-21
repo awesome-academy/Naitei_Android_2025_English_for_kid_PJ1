@@ -18,6 +18,10 @@ import com.example.englishappforkid.presentation.screens.profile.profileDetailSc
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
 import com.example.englishappforkid.presentation.screens.songlist.songListScreen
 import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
+import com.example.englishappforkid.presentation.playvideo.songScreen
+import com.example.englishappforkid.presentation.playvideo.videoScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 @Composable
 fun mainScreen() {
@@ -51,6 +55,31 @@ fun mainScreen() {
             composable(ScreenRoutes.VIDEO_LIST) { videoListScreen(navController = navController) }
             composable(ScreenRoutes.SONG_LIST) { songListScreen(navController = navController) }
             composable(ScreenRoutes.PROFILE_DETAIL) { profileDetailScreen(navController, userProfile = fakeUser) }
+
+            composable(
+                route = "video_player/{videoId}",
+                arguments = listOf(navArgument("videoId") { type = NavType.StringType }),
+            ) { backStackEntry ->
+                val videoId = backStackEntry.arguments?.getString("videoId")
+                if (videoId != null) {
+                    videoScreen(
+                        videoId = videoId,
+                        navController = navController,
+                    )
+                }
+            }
+            composable(
+                route = "song_player/{songId}",
+                arguments = listOf(navArgument("songId") { type = NavType.StringType }),
+            ) { backStackEntry ->
+                val songId = backStackEntry.arguments?.getString("songId")
+                if (songId != null) {
+                    songScreen(
+                        videoId = songId,
+                        navController = navController,
+                    )
+                }
+            }
         }
     }
 }

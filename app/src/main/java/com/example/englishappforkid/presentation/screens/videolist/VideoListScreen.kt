@@ -138,6 +138,7 @@ fun videoListScreen(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoListItem(videoItem = video, onClick = {
+                            navController.navigate("video_player/${video.id}")
                             Toast
                                 .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
                                 .show()
@@ -151,6 +152,7 @@ fun videoListScreen(
                 ) {
                     items(filteredVideos, key = { it.id }) { video ->
                         videoGridItem(videoItem = video, onClick = {
+                            navController.navigate("video_player/${video.id}")
                             Toast
                                 .makeText(context, "Playing ${video.title}", Toast.LENGTH_SHORT)
                                 .show()
