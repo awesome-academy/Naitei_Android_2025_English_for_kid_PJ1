@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    // AndroidX & Jetpack Compose Core
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
+    implementation("androidx.compose.material3:material3:1.3.2")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Navigation
@@ -68,6 +69,7 @@ dependencies {
     implementation(libs.firebase.firestore)
 //    implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.auth)
+    implementation(libs.androidx.media3.ui)
 //    implementation(libs.play.services.gcm)
 
     // Testing
@@ -78,4 +80,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Import the Firebase BoM
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation(libs.firebase.analytics)
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.9.3")
 }

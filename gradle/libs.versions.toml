@@ -20,6 +20,7 @@ googleServices = "4.4.3"
 ktlint = "13.0.0"
 playServicesGcm = "17.0.0"
 firebaseFirestoreKtx = "26.0.0"
+media3Ui = "1.8.0"
 
 [libraries]
 # AndroidX & Core
@@ -61,6 +62,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 play-services-gcm = { module = "com.google.android.gms:play-services-gcm", version.ref = "playServicesGcm" }
 google-firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Ui" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
