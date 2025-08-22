@@ -1,6 +1,7 @@
 package com.example.englishappforkid.presentation.playvideo
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -66,6 +67,7 @@ fun videoScreen(
 ) {
     val context = LocalContext.current
     val videoItem = remember(videoId) { VideoDataSource.getVideoById(videoId) }
+    val dbHelper = remember { DBHelper(context) }
     val scope = rememberCoroutineScope()
 
     var isFullscreen by remember { mutableStateOf(false) }
@@ -171,7 +173,14 @@ fun videoScreen(
                         Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, "Play/Pause")
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { /* Logic tải video */ }) {
+                    IconButton(onClick = {
+                        if (dbHelper.isVideoExists(videoItem.videoId)) {
+                            Toast.makeText(context, "The story already exists", Toast.LENGTH_SHORT).show()
+                        } else {
+                            dbHelper.addVideo(videoItem)
+                            Toast.makeText(context, "story saved!", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
                         Icon(Icons.Default.Download, contentDescription = "Download")
                     }
                     IconButton(onClick = { isFullscreen = true }) {
