@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,9 +22,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,17 +38,46 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.englishappforkid.R
+import com.example.englishappforkid.data.model.UserProfile
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.englishAppForKidTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.example.englishappforkid.ui.theme.boxFullname // Thêm dòng này
 
 @Composable
-fun profileScreen(navController: NavHostController) {
+fun profileScreen(
+    navController: NavHostController,
+    viewModel: ProfileViewModel = viewModel(),
+) {
+    val userProfile by viewModel.userProfile.collectAsState()
+    val auth = FirebaseAuth.getInstance()
+
+    if (userProfile != null) {
+        ProfileContent(userProfile = userProfile!!, navController = navController, auth = auth)
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Composable
+fun ProfileContent(
+    userProfile: UserProfile,
+    navController: NavHostController,
+    auth: FirebaseAuth,
+) {
     Column(
         modifier =
             Modifier
@@ -53,7 +86,6 @@ fun profileScreen(navController: NavHostController) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Header
         Box(
             modifier =
                 Modifier
@@ -61,7 +93,6 @@ fun profileScreen(navController: NavHostController) {
                     .padding(bottom = 16.dp),
             contentAlignment = Alignment.Center,
         ) {
-            // Back icon nằm bên trái
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
@@ -74,7 +105,6 @@ fun profileScreen(navController: NavHostController) {
                             navController.popBackStack()
                         },
             )
-            // Tiêu đề nằm giữa
             Text(
                 text = stringResource(R.string.profile),
                 fontSize = 24.sp,
@@ -86,6 +116,7 @@ fun profileScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         nameSection(
+            userProfile = userProfile,
             onClick = {
                 navController.navigate(ScreenRoutes.PROFILE_DETAIL)
             },
@@ -121,8 +152,9 @@ fun profileScreen(navController: NavHostController) {
             title = stringResource(R.string.log_out),
             backgroundColor = Cowbell,
             onClick = {
-                navController.navigate(ScreenRoutes.LOGIN) {
-                    popUpTo(ScreenRoutes.PROFILE) { inclusive = true }
+                auth.signOut()
+                navController.navigate(ScreenRoutes.WELCOME) {
+                    popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
                 }
             },
         )
@@ -130,7 +162,7 @@ fun profileScreen(navController: NavHostController) {
 }
 
 @Composable
-fun nameSection(onClick: () -> Unit) {
+fun nameSection(userProfile: UserProfile, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = boxBackground),
@@ -145,18 +177,29 @@ fun nameSection(onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.person_1),
-                    contentDescription = "Profile Picture",
-                    modifier =
-                        Modifier
-                            .size(80.dp)
-                            .clip(RoundedCornerShape(24.dp)),
-                )
+                // Thay thế Image bằng AsyncImage để tải ảnh từ URL
+                if (userProfile.avatarUrl.isNotBlank()) {
+                    AsyncImage(
+                        model = userProfile.avatarUrl,
+                        contentDescription = "Profile Picture",
+                        modifier =
+                            Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(24.dp)),
+                    )
+                } else {
+                    // Hiển thị ảnh trắng nếu không có ảnh đại diện
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(80.dp)
+                                .background(Color.LightGray, RoundedCornerShape(24.dp))
+                    )
+                }
                 Spacer(modifier = Modifier.width(24.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = stringResource(R.string.full_name), fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    Text(text = userProfile.fullName, fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     Text(text = stringResource(R.string.view_my_profile), color = Color.Blue, fontSize = 18.sp)
                 }
 
@@ -259,6 +302,12 @@ fun logout(
 fun previewProfileScreen() {
     englishAppForKidTheme {
         val navController = rememberNavController()
-        profileScreen(navController = navController)
+        val fakeUser = UserProfile(
+            uid = "fake_uid",
+            fullName = "Nguyen Van A",
+            email = "test@example.com",
+            avatarUrl = "" // URL ảnh trống
+        )
+        ProfileContent(userProfile = fakeUser, navController = navController, auth = FirebaseAuth.getInstance())
     }
 }

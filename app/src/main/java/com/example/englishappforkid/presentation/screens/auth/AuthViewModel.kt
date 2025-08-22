@@ -10,11 +10,7 @@ import kotlinx.coroutines.flow.update
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-
-data class UserData(
-    val uid: String = "",
-    val email: String? = null
-)
+import com.example.englishappforkid.data.model.UserProfile
 
 class AuthViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AuthState())
@@ -50,7 +46,7 @@ class AuthViewModel : ViewModel() {
         auth.createUserWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveUserToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
+                    saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -72,7 +68,7 @@ class AuthViewModel : ViewModel() {
         auth.signInWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveUserToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
+                    saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -90,6 +86,7 @@ class AuthViewModel : ViewModel() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -100,15 +97,25 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    private fun saveUserToFirestore(uid: String?, email: String?) {
+    // Hàm mới để lưu hồ sơ người dùng vào Firestore
+    private fun saveUserProfileToFirestore(uid: String?, email: String?) {
         if (uid == null || email == null) return
 
-        val user = UserData(uid = uid, email = email)
-        db.collection("users").document(uid).set(user)
+        val userProfile = UserProfile(
+            uid = uid,
+            email = email,
+            fullName = "",
+            address = "",
+            nickname = "",
+            age = "",
+            avatarUrl = ""
+        )
+        // Lưu hồ sơ vào collection "user_profiles"
+        db.collection("user_profiles").document(uid).set(userProfile)
             .addOnSuccessListener {
             }
             .addOnFailureListener { e ->
-                _uiState.update { it.copy(error = "Failed to save user data: ${e.message}") }
+                _uiState.update { it.copy(error = "Failed to save user profile: ${e.message}") }
             }
     }
 }

@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -42,9 +40,10 @@ import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.LeaderboardEntry
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.ui.theme.boxBackground
-import com.example.englishappforkid.ui.theme.boxFullname
 import com.example.englishappforkid.ui.theme.colorButtonSelected
 import com.example.englishappforkid.ui.theme.icRefresh
+import com.google.firebase.auth.FirebaseAuth
+import com.example.englishappforkid.presentation.screens.prehome.LeaderboardViewModel
 
 @Composable
 fun preHomeScreen(
@@ -52,13 +51,21 @@ fun preHomeScreen(
     viewModel: LeaderboardViewModel = viewModel(),
 ) {
     val entries by viewModel.entries.collectAsState()
-    preHomeScreenContent(navController = navController, entries = entries)
+    val auth = FirebaseAuth.getInstance()
+    val user = auth.currentUser
+
+    preHomeScreenContent(
+        navController = navController,
+        entries = entries,
+        email = user?.email,
+    )
 }
 
 @Composable
 fun preHomeScreenContent(
     navController: NavHostController,
     entries: List<LeaderboardEntry>,
+    email: String?,
 ) {
     Column(
         modifier =
@@ -68,7 +75,7 @@ fun preHomeScreenContent(
                 .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        headerSection()
+        headerSection(email, navController)
         Spacer(modifier = Modifier.height(36.dp))
 
         menuCard(
@@ -109,7 +116,7 @@ fun preHomeScreenContent(
 }
 
 @Composable
-fun headerSection() {
+fun headerSection(email: String?, navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -148,13 +155,7 @@ fun headerSection() {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(stringResource(R.string.hello))
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(containerColor = boxFullname),
-                shape = RoundedCornerShape(8.dp),
-            ) {
-                Text(stringResource(R.string.full_name), color = Color.White)
-            }
+            Text(text = email ?: "Đang tải...", color = Color.White)
         }
     }
 }

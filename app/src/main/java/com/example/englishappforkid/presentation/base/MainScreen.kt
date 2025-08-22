@@ -3,10 +3,13 @@ package com.example.englishappforkid.presentation.base
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.englishappforkid.R
@@ -27,26 +30,38 @@ import com.example.englishappforkid.presentation.screens.profile.profileDetailSc
 import com.example.englishappforkid.presentation.screens.profile.profileScreen
 import com.example.englishappforkid.presentation.screens.songlist.songListScreen
 import com.example.englishappforkid.presentation.screens.videolist.videoListScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun mainScreen() {
     val navController = rememberNavController()
-    val fakeUser =
-        UserProfile(
-            fullName = "Nguyen Van A",
-            address = "Thai Nguyen",
-            nickname = "Fox",
-            age = "16 years old",
-            avatarResId = R.drawable.person_1,
-        )
+    val auth = FirebaseAuth.getInstance()
+
+    // Kiểm tra trạng thái đăng nhập khi ứng dụng khởi động
+    LaunchedEffect(key1 = Unit) {
+        if (auth.currentUser != null) {
+            navController.navigate(ScreenRoutes.HOME) {
+                popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
+            }
+        }
+    }
+
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val showBottomBar = when (currentBackStackEntry?.destination?.route) {
+        ScreenRoutes.HOME, ScreenRoutes.STORY, ScreenRoutes.DOWNLOAD, ScreenRoutes.PROFILE -> true
+        else -> false
+    }
+
     Scaffold(
         bottomBar = {
-            bottomNavBar(navController = navController)
+            if (showBottomBar) {
+                bottomNavBar(navController = navController)
+            }
         },
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = ScreenRoutes.HOME,
+            startDestination = ScreenRoutes.WELCOME,
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(ScreenRoutes.WELCOME) { WelcomeScreen(navController) }
@@ -54,7 +69,6 @@ fun mainScreen() {
             composable(ScreenRoutes.SIGN_IN) { SignInScreen(navController) }
             composable(ScreenRoutes.SIGN_UP) { SignUpScreen(navController) }
             composable(ScreenRoutes.FORGOT_PASSWORD) { ForgotPasswordScreen(navController) }
-
             composable(ScreenRoutes.HOME) { preHomeScreen(navController) }
             composable(ScreenRoutes.STORY) { contentListScreen(navController) }
             composable(ScreenRoutes.DOWNLOAD) { /* downloadScreen(navController) */ }
@@ -65,7 +79,7 @@ fun mainScreen() {
             composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
             composable(ScreenRoutes.VIDEO_LIST) { videoListScreen(navController = navController) }
             composable(ScreenRoutes.SONG_LIST) { songListScreen(navController = navController) }
-            composable(ScreenRoutes.PROFILE_DETAIL) { profileDetailScreen(navController, userProfile = fakeUser) }
+            composable(ScreenRoutes.PROFILE_DETAIL) { profileDetailScreen(navController, userProfile = UserProfile()) }
 
             composable(
                 route = "video_player/{videoId}",
