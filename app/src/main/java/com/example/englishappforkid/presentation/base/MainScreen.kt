@@ -11,6 +11,11 @@ import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.UserProfile
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
+import com.example.englishappforkid.presentation.screens.auth.AuthScreen
+import com.example.englishappforkid.presentation.screens.auth.ForgotPasswordScreen
+import com.example.englishappforkid.presentation.screens.auth.SignInScreen
+import com.example.englishappforkid.presentation.screens.auth.SignUpScreen
+import com.example.englishappforkid.presentation.screens.auth.WelcomeScreen
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
@@ -40,6 +45,12 @@ fun mainScreen() {
             startDestination = ScreenRoutes.HOME,
             modifier = Modifier.padding(innerPadding),
         ) {
+            composable(ScreenRoutes.WELCOME) { WelcomeScreen(navController) }
+            composable(ScreenRoutes.AUTH) { AuthScreen(navController) }
+            composable(ScreenRoutes.SIGN_IN) { SignInScreen(navController) }
+            composable(ScreenRoutes.SIGN_UP) { SignUpScreen(navController) }
+            composable(ScreenRoutes.FORGOT_PASSWORD) { ForgotPasswordScreen(navController) }
+
             composable(ScreenRoutes.HOME) { preHomeScreen(navController) }
             composable(ScreenRoutes.STORY) { contentListScreen(navController) }
             composable(ScreenRoutes.DOWNLOAD) { /* downloadScreen(navController) */ }
