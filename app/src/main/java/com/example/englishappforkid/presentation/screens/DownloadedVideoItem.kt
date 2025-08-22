@@ -108,7 +108,7 @@ fun downloadsScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Video đã tải",
+                        text = "Downloaded Video",
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge,
                     )
