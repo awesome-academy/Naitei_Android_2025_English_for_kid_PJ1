@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.google.gms.google.services)
     id("org.jlleitschuh.gradle.ktlint")
 }
 
@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-
+    // AndroidX & Jetpack Compose Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -52,9 +52,25 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
-    implementation("androidx.compose.material3:material3:1.3.2")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // Coil for Image Loading
     implementation(libs.coil.compose)
+
+    // Library for Google Sign-In
+    implementation(libs.play.services.auth)
+
+    // Firebase (sử dụng BoM để quản lý phiên bản)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+//    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.auth)
+//    implementation(libs.play.services.gcm)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -62,15 +78,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
-
-    // TODO: Add the dependencies for Firebase products you want to use
-    // When using the BoM, don't specify versions in Firebase dependencies
-    implementation(libs.firebase.analytics)
-
-    // Add the dependencies for any other desired Firebase products
-    // https://firebase.google.com/docs/android/setup#available-libraries
-    // Navigation
-    implementation("androidx.navigation:navigation-compose:2.9.3")
 }
