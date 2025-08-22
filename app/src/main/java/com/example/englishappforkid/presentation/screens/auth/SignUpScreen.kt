@@ -1,9 +1,23 @@
 package com.example.englishappforkid.presentation.screens.auth
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -14,9 +28,9 @@ import androidx.navigation.NavHostController
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 
 @Composable
-fun SignUpScreen(
+fun signUpScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
 ) {
     val uiState by authViewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -30,7 +44,7 @@ fun SignUpScreen(
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Sign Up", style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(32.dp))
@@ -39,7 +53,7 @@ fun SignUpScreen(
             value = uiState.email,
             onValueChange = { authViewModel.onEmailChange(it) },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -48,7 +62,7 @@ fun SignUpScreen(
             onValueChange = { authViewModel.onPasswordChange(it) },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -57,21 +71,20 @@ fun SignUpScreen(
             onValueChange = { authViewModel.onConfirmPasswordChange(it) },
             label = { Text("Confirm Password") },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
                 authViewModel.signUp {
-                    // Chuyển về màn hình chính sau khi đăng ký thành công
                     navController.navigate(ScreenRoutes.HOME) {
                         popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
                     }
                 }
             },
             enabled = !uiState.isLoading,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp))

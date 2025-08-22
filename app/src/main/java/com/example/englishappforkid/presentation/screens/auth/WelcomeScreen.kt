@@ -16,11 +16,11 @@ import androidx.navigation.NavHostController
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 
 @Composable
-fun WelcomeScreen(navController: NavHostController) {
+fun welcomeScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(text = "Welcome to Project 01")
         Spacer(modifier = Modifier.height(32.dp))

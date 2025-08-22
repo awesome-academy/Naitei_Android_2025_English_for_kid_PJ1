@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 
 @Composable
-fun ForgotPasswordScreen(navController: NavHostController) {
+fun forgotPasswordScreen(navController: NavHostController) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = "Forgot Password Screen")
         // TODO: Xây dựng giao diện theo thiết kế

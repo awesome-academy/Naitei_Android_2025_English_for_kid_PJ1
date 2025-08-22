@@ -39,11 +39,11 @@ import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.LeaderboardEntry
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
+import com.example.englishappforkid.presentation.screens.prehome.LeaderboardViewModel
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.colorButtonSelected
 import com.example.englishappforkid.ui.theme.icRefresh
 import com.google.firebase.auth.FirebaseAuth
-import com.example.englishappforkid.presentation.screens.prehome.LeaderboardViewModel
 
 @Composable
 fun preHomeScreen(
@@ -116,7 +116,10 @@ fun preHomeScreenContent(
 }
 
 @Composable
-fun headerSection(email: String?, navController: NavHostController) {
+fun headerSection(
+    email: String?,
+    navController: NavHostController,
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,

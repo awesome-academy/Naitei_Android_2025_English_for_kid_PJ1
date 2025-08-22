@@ -12,17 +12,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.UserProfile
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.presentation.playvideo.songScreen
 import com.example.englishappforkid.presentation.playvideo.videoScreen
-import com.example.englishappforkid.presentation.screens.auth.AuthScreen
-import com.example.englishappforkid.presentation.screens.auth.ForgotPasswordScreen
-import com.example.englishappforkid.presentation.screens.auth.SignInScreen
-import com.example.englishappforkid.presentation.screens.auth.SignUpScreen
-import com.example.englishappforkid.presentation.screens.auth.WelcomeScreen
+import com.example.englishappforkid.presentation.screens.auth.authScreen
+import com.example.englishappforkid.presentation.screens.auth.forgotPasswordScreen
+import com.example.englishappforkid.presentation.screens.auth.signInScreen
+import com.example.englishappforkid.presentation.screens.auth.signUpScreen
+import com.example.englishappforkid.presentation.screens.auth.welcomeScreen
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
@@ -37,7 +36,6 @@ fun mainScreen() {
     val navController = rememberNavController()
     val auth = FirebaseAuth.getInstance()
 
-    // Kiểm tra trạng thái đăng nhập khi ứng dụng khởi động
     LaunchedEffect(key1 = Unit) {
         if (auth.currentUser != null) {
             navController.navigate(ScreenRoutes.HOME) {
@@ -47,10 +45,11 @@ fun mainScreen() {
     }
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val showBottomBar = when (currentBackStackEntry?.destination?.route) {
-        ScreenRoutes.HOME, ScreenRoutes.STORY, ScreenRoutes.DOWNLOAD, ScreenRoutes.PROFILE -> true
-        else -> false
-    }
+    val showBottomBar =
+        when (currentBackStackEntry?.destination?.route) {
+            ScreenRoutes.HOME, ScreenRoutes.STORY, ScreenRoutes.DOWNLOAD, ScreenRoutes.PROFILE -> true
+            else -> false
+        }
 
     Scaffold(
         bottomBar = {
@@ -64,11 +63,11 @@ fun mainScreen() {
             startDestination = ScreenRoutes.WELCOME,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable(ScreenRoutes.WELCOME) { WelcomeScreen(navController) }
-            composable(ScreenRoutes.AUTH) { AuthScreen(navController) }
-            composable(ScreenRoutes.SIGN_IN) { SignInScreen(navController) }
-            composable(ScreenRoutes.SIGN_UP) { SignUpScreen(navController) }
-            composable(ScreenRoutes.FORGOT_PASSWORD) { ForgotPasswordScreen(navController) }
+            composable(ScreenRoutes.WELCOME) { welcomeScreen(navController) }
+            composable(ScreenRoutes.AUTH) { authScreen(navController) }
+            composable(ScreenRoutes.SIGN_IN) { signInScreen(navController) }
+            composable(ScreenRoutes.SIGN_UP) { signUpScreen(navController) }
+            composable(ScreenRoutes.FORGOT_PASSWORD) { forgotPasswordScreen(navController) }
             composable(ScreenRoutes.HOME) { preHomeScreen(navController) }
             composable(ScreenRoutes.STORY) { contentListScreen(navController) }
             composable(ScreenRoutes.DOWNLOAD) { /* downloadScreen(navController) */ }

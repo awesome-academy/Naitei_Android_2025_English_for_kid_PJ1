@@ -5,5 +5,5 @@ data class AuthState(
     val pass: String = "",
     val confirmPass: String = "",
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )

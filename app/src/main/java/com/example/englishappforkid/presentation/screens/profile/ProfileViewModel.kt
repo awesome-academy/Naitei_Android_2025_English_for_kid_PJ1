@@ -37,7 +37,10 @@ class ProfileViewModel : ViewModel() {
             return
         }
 
-        db.collection("user_profiles").document(uid).get()
+        db
+            .collection("user_profiles")
+            .document(uid)
+            .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     val profile = document.toObject(UserProfile::class.java)
@@ -46,8 +49,7 @@ class ProfileViewModel : ViewModel() {
                     // Handle case where profile document doesn't exist
                     _userProfile.value = UserProfile(uid = uid, email = auth.currentUser?.email ?: "")
                 }
-            }
-            .addOnFailureListener { e ->
+            }.addOnFailureListener { e ->
                 // Handle fetch failure
             }
     }

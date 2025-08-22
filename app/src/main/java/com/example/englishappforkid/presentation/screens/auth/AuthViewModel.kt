@@ -3,14 +3,14 @@
 package com.example.englishappforkid.presentation.screens.auth
 
 import androidx.lifecycle.ViewModel
+import com.example.englishappforkid.data.model.UserProfile
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.FirebaseFirestore
-import com.example.englishappforkid.data.model.UserProfile
 
 class AuthViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AuthState())
@@ -43,7 +43,8 @@ class AuthViewModel : ViewModel() {
             return
         }
 
-        auth.createUserWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
+        auth
+            .createUserWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
@@ -65,7 +66,8 @@ class AuthViewModel : ViewModel() {
             return
         }
 
-        auth.signInWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
+        auth
+            .signInWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
@@ -79,11 +81,15 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    fun signInWithGoogle(account: GoogleSignInAccount, onSuccess: () -> Unit) {
+    fun signInWithGoogle(
+        account: GoogleSignInAccount,
+        onSuccess: () -> Unit,
+    ) {
         _uiState.update { it.copy(isLoading = true, error = null) }
 
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        auth.signInWithCredential(credential)
+        auth
+            .signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
@@ -97,24 +103,28 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    // Hàm mới để lưu hồ sơ người dùng vào Firestore
-    private fun saveUserProfileToFirestore(uid: String?, email: String?) {
+    private fun saveUserProfileToFirestore(
+        uid: String?,
+        email: String?,
+    ) {
         if (uid == null || email == null) return
 
-        val userProfile = UserProfile(
-            uid = uid,
-            email = email,
-            fullName = "",
-            address = "",
-            nickname = "",
-            age = "",
-            avatarUrl = ""
-        )
-        // Lưu hồ sơ vào collection "user_profiles"
-        db.collection("user_profiles").document(uid).set(userProfile)
+        val userProfile =
+            UserProfile(
+                uid = uid,
+                email = email,
+                fullName = "",
+                address = "",
+                nickname = "",
+                age = "",
+                avatarUrl = "",
+            )
+        db
+            .collection("user_profiles")
+            .document(uid)
+            .set(userProfile)
             .addOnSuccessListener {
-            }
-            .addOnFailureListener { e ->
+            }.addOnFailureListener { e ->
                 _uiState.update { it.copy(error = "Failed to save user profile: ${e.message}") }
             }
     }
