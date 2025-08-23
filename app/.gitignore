@@ -1,1 +1,15 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
 /build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Google Services file
+google-services.json
+# Log files and system files
+*.log

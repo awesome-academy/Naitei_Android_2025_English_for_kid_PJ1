@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">EnglishAppforKid</string>
+    <string name="short_story">Short Story</string>
+    <string name="song">Song</string>
+    <string name="english_app">English App</string>
+    <string name="hello">Hello</string>
+    <string name="full_name">Full name</string>
+    <string name="leaderboard">👑 Leaderboard</string>
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="notification_setup">Notification Setup</string>
+    <string name="term_policy"><![CDATA[Term & Policy]]></string>
+    <string name="log_out">Log out</string>
+    <string name="view_my_profile">View my profile</string>
+    <string name="change_password">Change Password</string>
+    <string name="my_profile">My profile</string>
+    <string name="once_everyday">Once everyday</string>
+    <string name="twice_a_day">Twice a day</string>
+    <string name="weekly">Weekly</string>
+    <string name="custom">Custom</string>
+    <string name="select_date">Select date</string>
+    <string name="complete">Complete</string>
+    <string name="ok">OK</string>
+    <string name="enter_date">Enter date</string>
+    <string name="cancel">Cancel</string>
+    <string name="short_stories">Short Stories</string>
+    <string name="search_stories">Search stories...</string>
+    <string name="placeholder_date">mm/dd/yyyy</string>
+    <string name="label_from">From</string>
+    <string name="label_to">To</string>
+    <string name="calendar_icon">Calendar Icon</string>
+    <string name="back">Back</string>
+
 </resources>
