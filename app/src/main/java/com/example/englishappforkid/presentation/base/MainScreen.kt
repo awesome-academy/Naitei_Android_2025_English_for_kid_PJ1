@@ -24,7 +24,6 @@ import com.example.englishappforkid.presentation.screens.auth.signUpScreen
 import com.example.englishappforkid.presentation.screens.auth.welcomeScreen
 import com.example.englishappforkid.presentation.screens.downloads.downloadedVideoPlayerScreen
 import com.example.englishappforkid.presentation.screens.downloads.downloadsScreen
-import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.profile.profileDetailScreen
@@ -49,7 +48,7 @@ fun mainScreen() {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val showBottomBar =
         when (currentBackStackEntry?.destination?.route) {
-            ScreenRoutes.HOME, ScreenRoutes.STORY, ScreenRoutes.DOWNLOAD, ScreenRoutes.PROFILE -> true
+            ScreenRoutes.HOME, ScreenRoutes.SONG_LIST, ScreenRoutes.DOWNLOAD, ScreenRoutes.PROFILE -> true
             else -> false
         }
 
@@ -71,7 +70,6 @@ fun mainScreen() {
             composable(ScreenRoutes.SIGN_UP) { signUpScreen(navController) }
             composable(ScreenRoutes.FORGOT_PASSWORD) { forgotPasswordScreen(navController) }
             composable(ScreenRoutes.HOME) { preHomeScreen(navController) }
-            composable(ScreenRoutes.STORY) { contentListScreen(navController) }
             composable(ScreenRoutes.DOWNLOAD) { downloadsScreen(navController = navController) }
             composable(ScreenRoutes.PROFILE) { profileScreen(navController) }
             composable(ScreenRoutes.EDIT_PROFILE) { /* Edit Profile Screen */ }

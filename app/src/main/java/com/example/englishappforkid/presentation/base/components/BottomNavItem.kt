@@ -2,6 +2,7 @@ package com.example.englishappforkid.presentation.base.components
 
 import androidx.annotation.DrawableRes
 import com.example.englishappforkid.R
+import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 
 data class BottomNavItem(
     val route: String,
@@ -10,8 +11,8 @@ data class BottomNavItem(
 
 val bottomNavItems =
     listOf(
-        BottomNavItem("home", R.drawable.ic_home),
-        BottomNavItem("story", R.drawable.ic_book),
-        BottomNavItem("download", R.drawable.ic_download),
-        BottomNavItem("profile", R.drawable.ic_user),
+        BottomNavItem(ScreenRoutes.HOME, R.drawable.ic_home),
+        BottomNavItem(ScreenRoutes.SONG_LIST, R.drawable.ic_book),
+        BottomNavItem(ScreenRoutes.DOWNLOAD, R.drawable.ic_download),
+        BottomNavItem(ScreenRoutes.PROFILE, R.drawable.ic_user),
     )

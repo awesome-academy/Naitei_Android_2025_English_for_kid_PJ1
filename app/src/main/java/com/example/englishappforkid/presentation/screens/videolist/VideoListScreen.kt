@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -56,6 +57,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.VideoItem
+import com.example.englishappforkid.presentation.base.components.bottomNavBar
+import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,8 +116,14 @@ fun videoListScreen(
                             contentDescription = "Switch View",
                         )
                     }
+                    IconButton(onClick = { navController.navigate(ScreenRoutes.SONG_LIST) }) {
+                        Icon(imageVector = Icons.Default.LibraryMusic, contentDescription = "Go to Song Library")
+                    }
                 },
             )
+        },
+        bottomBar = {
+            bottomNavBar(navController)
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {

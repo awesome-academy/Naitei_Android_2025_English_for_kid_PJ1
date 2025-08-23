@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.englishappforkid.presentation.base.components.backgroundImage
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 
 @Composable
@@ -40,7 +41,7 @@ fun signUpScreen(
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
-
+    backgroundImage()
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,

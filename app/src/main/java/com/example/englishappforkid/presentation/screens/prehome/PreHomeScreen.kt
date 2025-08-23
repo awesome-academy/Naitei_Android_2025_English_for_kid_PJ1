@@ -158,7 +158,7 @@ fun headerSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(stringResource(R.string.hello))
-            Text(text = email ?: "Đang tải...", color = Color.White)
+            Text(text = email ?: stringResource(R.string.loading), color = Color.White)
         }
     }
 }

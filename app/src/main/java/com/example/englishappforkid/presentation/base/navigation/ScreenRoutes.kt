@@ -2,7 +2,6 @@ package com.example.englishappforkid.presentation.base.navigation
 
 object ScreenRoutes {
     const val HOME = "home"
-    const val STORY = "story"
     const val DOWNLOAD = "download"
     const val PROFILE = "profile"
     const val EDIT_PROFILE = "edit_profile_screen"

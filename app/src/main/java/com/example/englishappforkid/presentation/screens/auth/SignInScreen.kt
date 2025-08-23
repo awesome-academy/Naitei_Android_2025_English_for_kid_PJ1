@@ -23,10 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.englishappforkid.R
+import com.example.englishappforkid.presentation.base.components.backgroundImage
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -70,19 +73,22 @@ fun signInScreen(
                 Toast.makeText(context, "Google Sign In Failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
-
+    backgroundImage()
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Sign In", style = MaterialTheme.typography.headlineLarge)
+        Text(stringResource(R.string.sign_in), style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedTextField(
             value = uiState.email,
             onValueChange = { authViewModel.onEmailChange(it) },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.email)) },
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -90,7 +96,7 @@ fun signInScreen(
         OutlinedTextField(
             value = uiState.pass,
             onValueChange = { authViewModel.onPasswordChange(it) },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password)) },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
         )
@@ -110,7 +116,7 @@ fun signInScreen(
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
             } else {
-                Text("Sign In")
+                Text(stringResource(R.string.sign_in))
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -123,7 +129,7 @@ fun signInScreen(
             enabled = !uiState.isLoading,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Sign in by Google")
+            Text(stringResource(R.string.sign_in_by_google))
         }
     }
 }
