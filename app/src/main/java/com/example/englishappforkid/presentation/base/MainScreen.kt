@@ -22,6 +22,8 @@ import com.example.englishappforkid.presentation.screens.auth.forgotPasswordScre
 import com.example.englishappforkid.presentation.screens.auth.signInScreen
 import com.example.englishappforkid.presentation.screens.auth.signUpScreen
 import com.example.englishappforkid.presentation.screens.auth.welcomeScreen
+import com.example.englishappforkid.presentation.screens.downloads.downloadedVideoPlayerScreen
+import com.example.englishappforkid.presentation.screens.downloads.downloadsScreen
 import com.example.englishappforkid.presentation.screens.home.contentListScreen
 import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
@@ -70,7 +72,7 @@ fun mainScreen() {
             composable(ScreenRoutes.FORGOT_PASSWORD) { forgotPasswordScreen(navController) }
             composable(ScreenRoutes.HOME) { preHomeScreen(navController) }
             composable(ScreenRoutes.STORY) { contentListScreen(navController) }
-            composable(ScreenRoutes.DOWNLOAD) { /* downloadScreen(navController) */ }
+            composable(ScreenRoutes.DOWNLOAD) { downloadsScreen(navController = navController) }
             composable(ScreenRoutes.PROFILE) { profileScreen(navController) }
             composable(ScreenRoutes.EDIT_PROFILE) { /* Edit Profile Screen */ }
             composable(ScreenRoutes.NOTIFICATION_SETUP) { notiSetup(navController) }
@@ -100,6 +102,18 @@ fun mainScreen() {
                 if (songId != null) {
                     songScreen(
                         videoId = songId,
+                        navController = navController,
+                    )
+                }
+            }
+            composable(
+                route = "downloaded_player/{downloadId}",
+                arguments = listOf(navArgument("downloadId") { type = NavType.StringType }),
+            ) { backStackEntry ->
+                val downloadId = backStackEntry.arguments?.getString("downloadId")
+                if (downloadId != null) {
+                    downloadedVideoPlayerScreen(
+                        videoId = downloadId,
                         navController = navController,
                     )
                 }
