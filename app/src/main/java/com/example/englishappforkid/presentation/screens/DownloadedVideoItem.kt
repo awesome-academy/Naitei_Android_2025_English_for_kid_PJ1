@@ -97,7 +97,7 @@ fun downloadsScreen(navController: NavHostController) {
                     Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.White,
                 shadowElevation = 4.dp,
             ) {
                 Row(
@@ -109,7 +109,7 @@ fun downloadsScreen(navController: NavHostController) {
                 ) {
                     Text(
                         text = "Downloaded Video",
-                        color = Color.White,
+                        color = Color.Black,
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
