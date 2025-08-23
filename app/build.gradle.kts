@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.google.gms.google.services)
     id("org.jlleitschuh.gradle.ktlint")
 }
 
@@ -54,7 +54,25 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation("androidx.compose.material3:material3:1.3.2")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // Coil for Image Loading
     implementation(libs.coil.compose)
+
+    // Library for Google Sign-In
+    implementation(libs.play.services.auth)
+
+    // Firebase (sử dụng BoM để quản lý phiên bản)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+//    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.media3.ui)
+//    implementation(libs.play.services.gcm)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
