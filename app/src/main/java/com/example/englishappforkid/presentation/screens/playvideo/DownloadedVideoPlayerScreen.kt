@@ -1,10 +1,9 @@
-package com.example.englishappforkid.presentation.playvideo
+package com.example.englishappforkid.presentation.screens.downloads
 
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,18 +14,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,9 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -52,27 +46,30 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import com.example.englishappforkid.data.SongDataSource
-import com.example.englishappforkid.data.model.VideoItem
+import com.example.englishappforkid.presentation.playvideo.DBHelper
+import com.example.englishappforkid.presentation.playvideo.VideoPlayerViewModel
+import com.example.englishappforkid.presentation.playvideo.suggestedVideoItem
 import com.example.englishappforkid.presentation.screens.playvideo.formatTime
 import kotlinx.coroutines.delay
 
 @Composable
-fun songScreen(
+fun downloadedVideoPlayerScreen(
     videoId: String,
     navController: NavHostController,
     playerViewModel: VideoPlayerViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val dbHelper = remember { DBHelper(context) }
-    val videoItem = remember(videoId) { SongDataSource.songs.find { it.id == videoId } }
+
+    val videoItem = remember(videoId) { dbHelper.getVideoById(videoId) }
+    val allDownloadedVideos = remember { dbHelper.getAllVideos() }
 
     var isFullscreen by remember { mutableStateOf(false) }
 
     if (videoItem == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Song not found!")
+        Text("Không tìm thấy video.", modifier = Modifier.padding(16.dp))
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
         }
         return
     }
@@ -82,9 +79,7 @@ fun songScreen(
 
     DisposableEffect(videoId) {
         playerViewModel.playVideo(videoItem.videoId)
-        onDispose {
-            exoPlayer.stop()
-        }
+        onDispose { exoPlayer.pause() }
     }
 
     var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
@@ -104,7 +99,7 @@ fun songScreen(
 
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     if (playbackState == Player.STATE_READY) {
-                        duration = exoPlayer.duration.coerceAtLeast(0)
+                        duration = exoPlayer.duration
                     }
                 }
             }
@@ -135,16 +130,13 @@ fun songScreen(
                     onClick = { isFullscreen = false },
                     modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
                 ) {
-                    Icon(Icons.Default.FullscreenExit, contentDescription = "Exit Fullscreen", tint = Color.White)
+                    Icon(Icons.Default.FullscreenExit, contentDescription = "Thoát toàn màn hình", tint = Color.White)
                 }
             }
         } else {
-            val suggestedSongs =
+            val suggestedVideos =
                 remember(videoId) {
-                    SongDataSource.songs
-                        .filter { it.id != videoId }
-                        .shuffled()
-                        .take(5)
+                    allDownloadedVideos.filter { it.id != videoId }.shuffled().take(3)
                 }
             Column(
                 modifier = Modifier.fillMaxSize().background(Color.White).padding(8.dp),
@@ -175,21 +167,18 @@ fun songScreen(
                     Text(text = "${formatTime(currentPosition)} / ${formatTime(duration)}")
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = { if (isPlaying) exoPlayer.pause() else exoPlayer.play() }) {
-                        Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, "Play/Pause")
+                        Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, "Phát/Tạm dừng")
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
-                        if (dbHelper.isVideoExists(videoItem.videoId)) {
-                            Toast.makeText(context, "The song already exists", Toast.LENGTH_SHORT).show()
-                        } else {
-                            dbHelper.addVideo(videoItem)
-                            Toast.makeText(context, "Song saved!", Toast.LENGTH_SHORT).show()
-                        }
+                        dbHelper.removeVideo(videoItem.id)
+                        Toast.makeText(context, "Đã xóa video!", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack()
                     }) {
-                        Icon(Icons.Default.Download, contentDescription = "Download")
+                        Icon(Icons.Default.Delete, contentDescription = "Xóa")
                     }
                     IconButton(onClick = { isFullscreen = true }) {
-                        Icon(Icons.Default.Fullscreen, contentDescription = "Fullscreen")
+                        Icon(Icons.Default.Fullscreen, contentDescription = "Toàn màn hình")
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -203,7 +192,7 @@ fun songScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Next Songs",
+                    text = "Next videos",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
                 )
@@ -211,42 +200,14 @@ fun songScreen(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 8.dp),
                 ) {
-                    items(suggestedSongs, key = { it.id }) { suggestion ->
-                        suggestedSongItem(
+                    items(suggestedVideos, key = { it.id }) { suggestion ->
+                        suggestedVideoItem(
                             videoItem = suggestion,
-                            onClick = { navController.navigate("song_player/${suggestion.id}") },
+                            onClick = { navController.navigate("downloaded_player/${suggestion.id}") },
                         )
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun suggestedSongItem(
-    videoItem: VideoItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.width(160.dp).padding(end = 8.dp).clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(2.dp),
-    ) {
-        Column {
-            AsyncImage(
-                model = videoItem.thumbnailUrl,
-                contentDescription = videoItem.title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().height(90.dp),
-            )
-            Text(
-                text = videoItem.title,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(8.dp),
-            )
         }
     }
 }
