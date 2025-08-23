@@ -35,16 +35,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.UserProfile
-import com.example.englishappforkid.ui.theme.Cowbell
-import com.example.englishappforkid.ui.theme.Pink80
-import com.example.englishappforkid.ui.theme.boxBackground
+
+private val colorPink80 = Color(0xFFEFB8C8)
+private val colorBoxBackground = Color(0xFFF0F0F0)
+private val colorCowbell = Color(0xFFD0BCFF)
 
 @Composable
 fun profileDetailScreen(
@@ -59,7 +59,6 @@ fun profileDetailScreen(
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Back + Title
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
@@ -72,7 +71,7 @@ fun profileDetailScreen(
                         .align(Alignment.CenterStart)
                         .size(28.dp)
                         .clickable { navController.popBackStack() },
-                tint = Pink80,
+                tint = colorPink80,
             )
 
             Text(
@@ -84,7 +83,6 @@ fun profileDetailScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Avatar + Crown
         Box(
             modifier =
                 Modifier
@@ -102,8 +100,8 @@ fun profileDetailScreen(
                             .offset(y = 12.dp),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Image(
-                    painter = painterResource(id = userProfile.avatarResId),
+                AsyncImage(
+                    model = userProfile.avatarUrl,
                     contentDescription = "Avatar",
                     modifier =
                         Modifier
@@ -128,10 +126,12 @@ fun profileDetailScreen(
                     .fillMaxWidth()
                     .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = boxBackground),
+            colors = CardDefaults.cardColors(containerColor = colorBoxBackground),
             elevation = CardDefaults.cardElevation(4.dp),
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
+                profileInfoRow(label = "Email", value = userProfile.email)
+                Spacer(modifier = Modifier.height(12.dp))
                 profileInfoRow(label = "Address", value = userProfile.address)
                 Spacer(modifier = Modifier.height(12.dp))
                 profileInfoRow(label = "Nickname", value = userProfile.nickname)
@@ -163,7 +163,7 @@ fun profileDetailScreen(
                 Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Cowbell),
+            colors = ButtonDefaults.buttonColors(containerColor = colorCowbell),
             shape = RoundedCornerShape(12.dp),
         ) {
             Icon(
@@ -216,19 +216,4 @@ fun profileInfoRow(
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun previewProfileDetailScreen() {
-    val fakeUser =
-        UserProfile(
-            fullName = "Nguyen Van A",
-            address = "Thai Nguyen",
-            nickname = "Fox",
-            age = "16 years old",
-            avatarResId = R.drawable.person_1,
-        )
-    val navController = rememberNavController()
-    profileDetailScreen(navController = navController, userProfile = fakeUser)
 }
