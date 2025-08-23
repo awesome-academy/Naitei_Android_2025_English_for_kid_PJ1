@@ -12,4 +12,9 @@ object ScreenRoutes {
     const val PROFILE_DETAIL = "profile_detail_screen"
     const val VIDEO_LIST = "video_list"
     const val SONG_LIST = "song_list"
+    const val WELCOME = "welcome"
+    const val AUTH = "auth"
+    const val SIGN_IN = "sign_in"
+    const val SIGN_UP = "sign_up"
+    const val FORGOT_PASSWORD = "forgot_password"
 }
