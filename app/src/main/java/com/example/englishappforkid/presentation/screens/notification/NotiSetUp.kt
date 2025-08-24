@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.englishappforkid.R
-import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.englishAppForKidTheme
@@ -87,64 +86,117 @@ fun notiSetup(navController: NavHostController) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Top Bar
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+            contentAlignment = Alignment.Center,
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back),
+                contentDescription = "Back",
+                tint = Pink80,
                 modifier =
                     Modifier
                         .align(Alignment.CenterStart)
                         .size(28.dp)
-                        .clickable { navController.popBackStack() },
-                tint = Pink80,
+                        .clickable {
+                            navController.popBackStack()
+                        },
             )
             Text(
                 text = stringResource(R.string.notification_setup),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
+                color = Color.Black,
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // From / To Date Picker
-        OutlinedTextField(
-            value = fromDate,
-            onValueChange = {},
-            placeholder = { Text(stringResource(R.string.placeholder_date)) },
-            label = { Text(stringResource(R.string.label_from)) },
-            readOnly = true,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { showDatePicker { selected -> fromDate = selected } },
-            shape = RoundedCornerShape(8.dp),
-        )
+        // Date Picker Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7F7)),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = stringResource(R.string.select_date), fontSize = 36.sp, color = Color.Gray)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = stringResource(R.string.enter_date), fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = fromDate,
+                    onValueChange = {},
+                    placeholder = { Text(stringResource(R.string.placeholder_date)) },
+                    label = { Text(stringResource(R.string.label_from)) },
+                    readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_calendar),
+                            contentDescription = null
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker { fromDate = it } },
+                    shape = RoundedCornerShape(8.dp)
+                )
 
-        OutlinedTextField(
-            value = toDate,
-            onValueChange = {},
-            placeholder = { Text(stringResource(R.string.placeholder_date)) },
-            label = { Text(stringResource(R.string.label_to)) },
-            readOnly = true,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { showDatePicker { selected -> toDate = selected } },
-            shape = RoundedCornerShape(8.dp),
-        )
+                Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(48.dp))
+                OutlinedTextField(
+                    value = toDate,
+                    onValueChange = {},
+                    placeholder = { Text(stringResource(R.string.placeholder_date)) },
+                    label = { Text(stringResource(R.string.label_to)) },
+                    readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_calendar),
+                            contentDescription = null
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker { toDate = it } },
+                    shape = RoundedCornerShape(8.dp)
+                )
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable { navController.popBackStack() }
+                    )
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = Color(0xFF00BCD4),
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable { /* xác nhận ngày */ }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Frequency Dropdown
         frequencyDropdown(
             selectedOption = selectedFrequency,
-            onOptionSelected = { selectedFrequency = it },
+            onOptionSelected = { selectedFrequency = it }
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         // Complete Button
         Button(
@@ -157,32 +209,28 @@ fun notiSetup(navController: NavHostController) {
                         putString("frequency", selectedFrequency)
                         apply()
                     }
-
-                    // 2. Mở Google Calendar
                     openGoogleCalendar(
                         context,
                         title = context.getString(R.string.english_practice),
                         description = "Daily reminder for English learning",
                         startDate = fromDate,
                         endDate = toDate,
-                        frequency = selectedFrequency,
+                        frequency = selectedFrequency
                     )
-
                     navController.popBackStack()
                 }
             },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(80.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Cowbell),
-            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFE082)),
+            shape = RoundedCornerShape(24.dp)
         ) {
             Text(
                 text = stringResource(R.string.complete),
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp,
-                color = Color.Black,
+                fontSize = 36.sp,
+                color = Color.Gray
             )
         }
     }
