@@ -219,6 +219,8 @@ fun notiSetup(navController: NavHostController) {
                         endDate = toDate,
                         frequency = selectedFrequency,
                     )
+                    createNotificationUtil(context)
+                    scheduleNotification(context)
                     navController.popBackStack()
                 }
             },
