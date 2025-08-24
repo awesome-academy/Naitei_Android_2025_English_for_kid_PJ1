@@ -38,5 +38,11 @@
     <string name="sign_in_by_google">Sign in by Google</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="english_practice">English Practice</string>
+    <string name="no_name">No Name</string>
+    <string name="address">Address</string>
+    <string name="nickname">Nickname</string>
+    <string name="age">Age</string>
+    <string name="not_set">Not set</string>
 
 </resources>

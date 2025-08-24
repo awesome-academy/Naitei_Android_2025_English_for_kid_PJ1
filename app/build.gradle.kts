@@ -42,7 +42,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,16 +60,22 @@ dependencies {
     // Coil for Image Loading
     implementation(libs.coil.compose)
 
-    // Library for Google Sign-In
+    // Google Sign-In
     implementation(libs.play.services.auth)
 
-    // Firebase (sử dụng BoM để quản lý phiên bản)
+    // Firebase BoM
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
-//    implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.analytics)
+
+    // Coroutines for Firebase Tasks
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+
+    // Media3 (Video/Audio)
+    implementation("androidx.media3:media3-exoplayer:1.8.0")
     implementation(libs.androidx.media3.ui)
-//    implementation(libs.play.services.gcm)
 
     // Testing
     testImplementation(libs.junit)
@@ -80,17 +85,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // Import the Firebase BoM
-    implementation("androidx.media3:media3-exoplayer:1.8.0")
-    implementation(libs.androidx.media3.ui)
-    implementation(libs.firebase.bom)
-
-    // TODO: Add the dependencies for Firebase products you want to use
-    // When using the BoM, don't specify versions in Firebase dependencies
-    implementation(libs.firebase.analytics)
-    implementation(libs.play.services.auth)
-    // Add the dependencies for any other desired Firebase products
-    // https://firebase.google.com/docs/android/setup#available-libraries
-    // Navigation
-    implementation(libs.androidx.navigation.compose)
 }

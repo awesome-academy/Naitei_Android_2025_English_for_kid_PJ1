@@ -113,7 +113,7 @@ class AuthViewModel : ViewModel() {
             UserProfile(
                 uid = uid,
                 email = email,
-                fullName = "",
+                fullname = "",
                 address = "",
                 nickname = "",
                 age = "",
