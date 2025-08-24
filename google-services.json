@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "395767946621",
+    "project_id": "englishappforkid",
+    "storage_bucket": "englishappforkid.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:395767946621:android:abaee961e347cf70358014",
+        "android_client_info": {
+          "package_name": "com.example.englishappforkid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4WiM1P3v0lp3r7YOel6sek9r0j_p5fgw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

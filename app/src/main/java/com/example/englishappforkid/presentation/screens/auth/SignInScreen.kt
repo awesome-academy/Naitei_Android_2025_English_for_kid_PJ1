@@ -53,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -107,7 +108,12 @@ fun signInScreen(
                     }
                 }
             } catch (e: ApiException) {
-                Toast.makeText(context, "Google Sign In Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast
+                    .makeText(
+                        context,
+                        context.getString(R.string.google_sign_in_failed, e.message),
+                        Toast.LENGTH_SHORT,
+                    ).show()
             }
         }
     Box(
@@ -157,7 +163,7 @@ fun signInScreen(
             Spacer(modifier = Modifier.height(300.dp))
 
             Text(
-                "Sign In",
+                text = stringResource(R.string.sign_in),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -167,14 +173,14 @@ fun signInScreen(
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = { authViewModel.onEmailChange(it) },
-                label = { Text("Email") },
+                label = { Text(stringResource(R.string.email)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = uiState.pass,
                 onValueChange = { authViewModel.onPasswordChange(it) },
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation =
                     if (passwordVisibility) {
@@ -219,10 +225,10 @@ fun signInScreen(
                         onCheckedChange = { isChecked = it },
                         modifier = Modifier.size(24.dp),
                     )
-                    Text(" Remember me", fontSize = 12.sp, color = Color.Black)
+                    Text(stringResource(R.string.remember_me), fontSize = 12.sp, color = Color.Black)
                 }
                 TextButton(onClick = { navController.navigate(ScreenRoutes.FORGOT_PASSWORD) }) {
-                    Text("Forgot Password?", fontSize = 12.sp, color = ForgotPasswordBlue)
+                    Text(stringResource(R.string.forgot_password), fontSize = 12.sp, color = ForgotPasswordBlue)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -246,7 +252,7 @@ fun signInScreen(
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Sign In", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                    Text(stringResource(R.string.sign_in), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -257,14 +263,14 @@ fun signInScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Don't have an account?", fontSize = 14.sp, color = Color.Black)
+                    Text(stringResource(R.string.don_t_have_an_account), fontSize = 14.sp, color = Color.Black)
                     Spacer(modifier = Modifier.width(4.dp))
                     TextButton(
                         onClick = { navController.navigate(ScreenRoutes.SIGN_UP) },
                         contentPadding = PaddingValues(0.dp),
                     ) {
                         Text(
-                            "Sign up",
+                            text = stringResource(R.string.sign_in),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = ForgotPasswordBlue,
@@ -311,7 +317,7 @@ fun signInScreen(
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Sign in by Google", fontSize = 20.sp, color = Color.Red)
+                Text(stringResource(R.string.sign_in_by_google), fontSize = 20.sp, color = Color.Red)
                 Spacer(modifier = Modifier.weight(1f))
             }
         }

@@ -48,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -126,7 +127,7 @@ fun signUpScreen(
         ) {
             Spacer(modifier = Modifier.height(300.dp))
             Text(
-                "Sign Up",
+                stringResource(R.string.sign_up),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -136,7 +137,7 @@ fun signUpScreen(
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = { authViewModel.onEmailChange(it) },
-                label = { Text("Email") },
+                label = { Text(stringResource(R.string.email)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
@@ -146,7 +147,7 @@ fun signUpScreen(
             OutlinedTextField(
                 value = uiState.pass,
                 onValueChange = { authViewModel.onPasswordChange(it) },
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation =
                     if (confirmPasswordVisibility) {
@@ -170,7 +171,7 @@ fun signUpScreen(
             OutlinedTextField(
                 value = uiState.confirmPass,
                 onValueChange = { authViewModel.onConfirmPasswordChange(it) },
-                label = { Text("Confirm Password") },
+                label = { Text(stringResource(R.string.confirm_password)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation =
                     if (confirmPasswordVisibility) {
@@ -217,7 +218,7 @@ fun signUpScreen(
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Sign Up", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                    Text(stringResource(R.string.sign_up), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -228,14 +229,14 @@ fun signUpScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Already have an account?", fontSize = 14.sp, color = Color.Black)
+                    Text(stringResource(R.string.already_have_an_account), fontSize = 14.sp, color = Color.Black)
                     Spacer(modifier = Modifier.width(4.dp))
                     TextButton(
                         onClick = { navController.navigate(ScreenRoutes.SIGN_IN) },
                         contentPadding = PaddingValues(0.dp),
                     ) {
                         Text(
-                            "Sign in",
+                            stringResource(R.string.sign_in),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = ForgotPasswordBlue,

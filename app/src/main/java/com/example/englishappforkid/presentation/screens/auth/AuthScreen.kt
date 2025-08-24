@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,7 +65,7 @@ fun authScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(350.dp))
 
             Text(
-                text = "Hello Everyone",
+                text = stringResource(R.string.hello_everyone),
                 fontSize = 35.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -80,7 +81,7 @@ fun authScreen(navController: NavHostController) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             ) {
                 Text(
-                    text = "Sign in",
+                    text = stringResource(R.string.sign_in),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black,
@@ -97,7 +98,7 @@ fun authScreen(navController: NavHostController) {
                 colors = ButtonDefaults.buttonColors(containerColor = SoftGreen),
             ) {
                 Text(
-                    text = "Sign up",
+                    text = stringResource(R.string.sign_up),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black,
@@ -125,7 +126,7 @@ fun authScreen(navController: NavHostController) {
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonYellow),
             ) {
                 Text(
-                    text = "Done",
+                    text = stringResource(R.string.done),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black,
