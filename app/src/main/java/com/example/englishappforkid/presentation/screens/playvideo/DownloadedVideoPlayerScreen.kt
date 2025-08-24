@@ -4,30 +4,41 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -37,8 +48,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,12 +60,13 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import com.example.englishappforkid.data.model.VideoItem
 import com.example.englishappforkid.presentation.playvideo.DBHelper
 import com.example.englishappforkid.presentation.playvideo.VideoPlayerViewModel
-import com.example.englishappforkid.presentation.playvideo.suggestedVideoItem
-import com.example.englishappforkid.presentation.screens.playvideo.formatTime
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun downloadedVideoPlayerScreen(
     videoId: String,
@@ -67,7 +82,9 @@ fun downloadedVideoPlayerScreen(
     var isFullscreen by remember { mutableStateOf(false) }
 
     if (videoItem == null) {
-        Text("Không tìm thấy video.", modifier = Modifier.padding(16.dp))
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Không tìm thấy video đã tải.")
+        }
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
@@ -94,12 +111,12 @@ fun downloadedVideoPlayerScreen(
                 }
 
                 override fun onPlayerError(error: PlaybackException) {
-                    Log.e("VideoPlayer", "Player Error: ", error)
+                    Log.e("VideoPlayer", "Error: ", error)
                 }
 
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     if (playbackState == Player.STATE_READY) {
-                        duration = exoPlayer.duration
+                        duration = exoPlayer.duration.coerceAtLeast(0)
                     }
                 }
             }
@@ -114,9 +131,7 @@ fun downloadedVideoPlayerScreen(
         }
     }
 
-    BackHandler(enabled = isFullscreen) {
-        isFullscreen = false
-    }
+    BackHandler(enabled = isFullscreen) { isFullscreen = false }
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (isFullscreen) {
@@ -130,84 +145,162 @@ fun downloadedVideoPlayerScreen(
                     onClick = { isFullscreen = false },
                     modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
                 ) {
-                    Icon(Icons.Default.FullscreenExit, contentDescription = "Thoát toàn màn hình", tint = Color.White)
+                    Icon(Icons.Default.FullscreenExit, "Thoát toàn màn hình", tint = Color.White)
                 }
             }
         } else {
-            val suggestedVideos =
-                remember(videoId) {
-                    allDownloadedVideos.filter { it.id != videoId }.shuffled().take(3)
-                }
-            Column(
-                modifier = Modifier.fillMaxSize().background(Color.White).padding(8.dp),
-            ) {
-                AndroidView(
-                    factory = { PlayerView(it).apply { useController = false } },
-                    modifier = Modifier.fillMaxWidth().height(220.dp),
-                    update = { it.player = exoPlayer },
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Slider(
-                    value = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f,
-                    onValueChange = { value ->
-                        val newPosition = (value * duration).toLong()
-                        exoPlayer.seekTo(newPosition)
-                        currentPosition = newPosition
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    Text(text = "${formatTime(currentPosition)} / ${formatTime(duration)}")
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { if (isPlaying) exoPlayer.pause() else exoPlayer.play() }) {
-                        Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, "Phát/Tạm dừng")
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        windowInsets = WindowInsets(0),
+                        title = { Text(videoItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Quay lại")
+                            }
+                        },
+                        colors =
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.White,
+                                titleContentColor = Color.Black,
+                                navigationIconContentColor = Color.Black,
+                            ),
+                    )
+                },
+            ) { innerPadding ->
+                val suggestedVideos =
+                    remember(videoId) {
+                        allDownloadedVideos.filter { it.id != videoId }.shuffled().take(4)
                     }
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = {
-                        dbHelper.removeVideo(videoItem.id)
-                        Toast.makeText(context, "Đã xóa video!", Toast.LENGTH_SHORT).show()
-                        navController.popBackStack()
-                    }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Xóa")
-                    }
-                    IconButton(onClick = { isFullscreen = true }) {
-                        Icon(Icons.Default.Fullscreen, contentDescription = "Toàn màn hình")
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Box(
-                    modifier = Modifier.fillMaxWidth().background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp)).padding(12.dp),
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                            .background(Color.White),
                 ) {
-                    Text(text = videoItem.description, color = Color.Black)
-                }
+                    AndroidView(
+                        factory = { PlayerView(it).apply { useController = false } },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(220.dp)
+                                .padding(horizontal = 8.dp),
+                        update = { it.player = exoPlayer },
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "Next videos",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
-                )
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 8.dp),
-                ) {
-                    items(suggestedVideos, key = { it.id }) { suggestion ->
-                        suggestedVideoItem(
-                            videoItem = suggestion,
-                            onClick = { navController.navigate("downloaded_player/${suggestion.id}") },
+                    // Thanh điều khiển được thiết kế lại
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFF49B0AB))
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(onClick = { if (isPlaying) exoPlayer.pause() else exoPlayer.play() }) {
+                            Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, "Phát/Tạm dừng", tint = Color.White)
+                        }
+                        Slider(
+                            value = if (duration > 0) currentPosition.toFloat() else 0f,
+                            onValueChange = { exoPlayer.seekTo(it.toLong()) },
+                            valueRange = 0f..(duration.toFloat().takeIf { it > 0 } ?: 0f),
+                            modifier = Modifier.weight(1f),
+                            colors =
+                                SliderDefaults.colors(
+                                    thumbColor = Color.White,
+                                    activeTrackColor = Color.White,
+                                    inactiveTrackColor = Color.LightGray.copy(alpha = 0.5f),
+                                ),
                         )
+                        // Nút Xóa thay cho nút Tải xuống
+                        IconButton(onClick = {
+                            dbHelper.removeVideo(videoItem.id)
+                            Toast.makeText(context, "Đã xóa video!", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Xóa", tint = Color.White)
+                        }
+                        IconButton(onClick = { isFullscreen = true }) {
+                            Icon(Icons.Default.Fullscreen, "Toàn màn hình", tint = Color.White)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                                .background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp))
+                                .padding(12.dp),
+                    ) {
+                        Text(text = videoItem.description, color = Color.Black)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Next videos",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
+                    )
+
+                    // Lưới video gợi ý
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(suggestedVideos, key = { it.id }) { suggestion ->
+                            suggestedVideoItem(
+                                videoItem = suggestion,
+                                onClick = { navController.navigate("downloaded_player/${suggestion.id}") },
+                            )
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+// Giữ lại Composable này để hiển thị item trong lưới
+@Composable
+fun suggestedVideoItem(
+    videoItem: VideoItem,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(2.dp),
+    ) {
+        Column {
+            AsyncImage(
+                model = videoItem.thumbnailUrl,
+                contentDescription = videoItem.title,
+                contentScale = ContentScale.Crop,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(90.dp),
+            )
+            Text(
+                text = videoItem.title,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(8.dp),
+            )
         }
     }
 }
