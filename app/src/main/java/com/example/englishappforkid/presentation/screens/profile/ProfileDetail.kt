@@ -17,53 +17,57 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.englishappforkid.R
-import com.example.englishappforkid.data.model.UserProfile
-import com.example.englishappforkid.ui.theme.Cowbell
-import com.example.englishappforkid.ui.theme.Pink80
-import com.example.englishappforkid.ui.theme.boxBackground
+import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 
 @Composable
 fun profileDetailScreen(
     navController: NavHostController,
-    userProfile: UserProfile,
+    viewModel: ProfileViewModel,
 ) {
+    val userProfile by viewModel.userProfile.collectAsState()
+
     Column(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Back + Title
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
+        // Header
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
@@ -72,7 +76,7 @@ fun profileDetailScreen(
                         .align(Alignment.CenterStart)
                         .size(28.dp)
                         .clickable { navController.popBackStack() },
-                tint = Pink80,
+                tint = MaterialTheme.colorScheme.primary,
             )
 
             Text(
@@ -84,7 +88,7 @@ fun profileDetailScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Avatar + Crown
+        // Avatar + Name
         Box(
             modifier =
                 Modifier
@@ -102,18 +106,50 @@ fun profileDetailScreen(
                             .offset(y = 12.dp),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Image(
-                    painter = painterResource(id = userProfile.avatarResId),
-                    contentDescription = "Avatar",
-                    modifier =
-                        Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .border(4.dp, Color.Yellow, RoundedCornerShape(16.dp)),
-                )
+                if (!userProfile?.avatarUrl.isNullOrEmpty()) {
+                    AsyncImage(
+                        model =
+                            ImageRequest
+                                .Builder(LocalContext.current)
+                                .data(userProfile?.avatarUrl)
+                                .crossfade(true)
+                                .build(),
+                        contentDescription = "Avatar",
+                        modifier =
+                            Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(
+                                    4.dp,
+                                    MaterialTheme.colorScheme.secondary,
+                                    RoundedCornerShape(16.dp),
+                                ),
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.person_1),
+                        contentDescription = "Default Avatar",
+                        modifier =
+                            Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(
+                                    4.dp,
+                                    MaterialTheme.colorScheme.secondary,
+                                    RoundedCornerShape(16.dp),
+                                ),
+                    )
+                }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = userProfile.fullName,
+                    text =
+                        if (!userProfile?.fullname.isNullOrEmpty()) {
+                            userProfile!!.fullname
+                        } else {
+                            stringResource(
+                                R.string.no_name,
+                            )
+                        },
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
                 )
@@ -122,27 +158,46 @@ fun profileDetailScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Info Card
         Card(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = boxBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             elevation = CardDefaults.cardElevation(4.dp),
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                profileInfoRow(label = "Address", value = userProfile.address)
+                profileInfoRow(
+                    label = stringResource(R.string.email),
+                    value = userProfile?.email ?: stringResource(R.string.not_set),
+                    showEdit = false,
+                )
                 Spacer(modifier = Modifier.height(12.dp))
-                profileInfoRow(label = "Nickname", value = userProfile.nickname)
+                profileInfoRow(
+                    label = stringResource(R.string.address),
+                    value =
+                        userProfile?.address?.ifEmpty { stringResource(R.string.not_set) } ?: stringResource(R.string.not_set),
+                    showEdit = false,
+                )
                 Spacer(modifier = Modifier.height(12.dp))
-                profileInfoRow(label = "Age", value = userProfile.age)
+                profileInfoRow(
+                    label = stringResource(R.string.nickname),
+                    value =
+                        userProfile?.nickname?.ifEmpty { stringResource(R.string.not_set) } ?: stringResource(R.string.not_set),
+                    showEdit = false,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                profileInfoRow(
+                    label = stringResource(R.string.age),
+                    value =
+                        userProfile?.age?.ifEmpty { stringResource(R.string.not_set) } ?: stringResource(R.string.not_set),
+                    showEdit = false,
+                )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                     repeat(5) {
                         Icon(
                             imageVector = Icons.Filled.Star,
@@ -158,23 +213,19 @@ fun profileDetailScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /* TODO: xử lý thay đổi mật khẩu */ },
+            onClick = { navController.navigate(ScreenRoutes.EDIT_PROFILE) },
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Cowbell),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(12.dp),
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_lock),
-                contentDescription = "Lock",
-                tint = Color.Black,
-            )
+            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit", tint = Color.White)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = stringResource(R.string.change_password),
-                color = Color.Black,
+                text = stringResource(R.string.edit_profile),
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
             )
@@ -186,6 +237,7 @@ fun profileDetailScreen(
 fun profileInfoRow(
     label: String,
     value: String,
+    showEdit: Boolean = true,
 ) {
     Card(
         modifier =
@@ -205,30 +257,16 @@ fun profileInfoRow(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
-                Text(text = label, color = Color.Blue, fontSize = 14.sp)
+                Text(text = label, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
                 Text(text = value, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
             }
-
-            Icon(
-                painter = painterResource(id = R.drawable.ic_edit),
-                contentDescription = "Edit",
-                tint = Color.Red,
-            )
+            if (showEdit) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_edit),
+                    contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun previewProfileDetailScreen() {
-    val fakeUser =
-        UserProfile(
-            fullName = "Nguyen Van A",
-            address = "Thai Nguyen",
-            nickname = "Fox",
-            age = "16 years old",
-            avatarResId = R.drawable.person_1,
-        )
-    val navController = rememberNavController()
-    profileDetailScreen(navController = navController, userProfile = fakeUser)
 }

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.presentation.screens.videolist.alphabetFilter
 import com.example.englishappforkid.presentation.screens.videolist.videoGridItem
 import com.example.englishappforkid.presentation.screens.videolist.videoListItem
@@ -92,6 +94,9 @@ fun songListScreen(
                             contentDescription = "Switch View",
                         )
                     }
+                    IconButton(onClick = { navController.navigate(ScreenRoutes.VIDEO_LIST) }) {
+                        Icon(imageVector = Icons.Default.VideoLibrary, contentDescription = "Go to Video List")
+                    }
                 },
             )
         },
@@ -122,6 +127,8 @@ fun songListScreen(
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(filteredSongs, key = { it.id }) { song ->
                         videoListItem(videoItem = song, onClick = {
+                            // SỬA LỖI Ở ĐÂY
+                            navController.navigate("song_player/${song.id}")
                             Toast
                                 .makeText(context, "Playing ${song.title}", Toast.LENGTH_SHORT)
                                 .show()
@@ -135,6 +142,8 @@ fun songListScreen(
                 ) {
                     items(filteredSongs, key = { it.id }) { song ->
                         videoGridItem(videoItem = song, onClick = {
+                            // SỬA LỖI Ở ĐÂY
+                            navController.navigate("song_player/${song.id}")
                             Toast
                                 .makeText(context, "Playing ${song.title}", Toast.LENGTH_SHORT)
                                 .show()
