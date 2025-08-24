@@ -2,7 +2,7 @@ package com.example.englishappforkid.data.model
 
 data class UserProfile(
     val uid: String = "",
-    val fullName: String = "",
+    val fullname: String = "",
     val email: String = "",
     val address: String = "",
     val nickname: String = "",

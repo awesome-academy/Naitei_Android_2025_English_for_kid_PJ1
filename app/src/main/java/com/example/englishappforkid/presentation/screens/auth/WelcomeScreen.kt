@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +72,7 @@ fun welcomeScreen(navController: NavHostController) {
                         .padding(top = 150.dp),
             ) {
                 Text(
-                    text = "Welcome to",
+                    text = stringResource(R.string.welcome_to),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -87,7 +88,7 @@ fun welcomeScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxSize(),
                     )
                     Text(
-                        text = "Project 01",
+                        text = stringResource(R.string.project_01),
                         fontSize = 45.sp,
                         fontWeight = FontWeight.Black,
                         color = DarkBlue,
@@ -144,7 +145,7 @@ fun welcomeScreen(navController: NavHostController) {
                     colors = ButtonDefaults.buttonColors(containerColor = ButtonYellow),
                 ) {
                     Text(
-                        "Let's go",
+                        stringResource(R.string.let_s_go),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.Black,

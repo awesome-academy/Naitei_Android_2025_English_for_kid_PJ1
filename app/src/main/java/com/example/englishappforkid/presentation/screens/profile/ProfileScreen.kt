@@ -176,7 +176,6 @@ fun nameSection(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                // Thay thế Image bằng AsyncImage để tải ảnh từ URL
                 if (userProfile.avatarUrl.isNotBlank()) {
                     AsyncImage(
                         model = userProfile.avatarUrl,
@@ -198,7 +197,7 @@ fun nameSection(
                 Spacer(modifier = Modifier.width(24.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = userProfile.fullName, fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    Text(text = userProfile.fullname, fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     Text(text = stringResource(R.string.view_my_profile), color = Color.Blue, fontSize = 18.sp)
                 }
 
@@ -304,7 +303,7 @@ fun previewProfileScreen() {
         val fakeUser =
             UserProfile(
                 uid = "fake_uid",
-                fullName = "Nguyen Van A",
+                fullname = "Nguyen Van A",
                 email = "test@example.com",
                 avatarUrl = "",
             )
