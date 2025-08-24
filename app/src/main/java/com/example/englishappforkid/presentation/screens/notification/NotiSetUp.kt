@@ -1,6 +1,7 @@
 package com.example.englishappforkid.presentation.screens.notification
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.widget.DatePicker
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -46,10 +46,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.englishappforkid.R
-import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.englishAppForKidTheme
+import com.example.englishappforkid.utils.openGoogleCalendar
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -89,26 +89,31 @@ fun notiSetup(navController: NavHostController) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Top Bar
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back),
+                contentDescription = "Back",
+                tint = Pink80,
                 modifier =
                     Modifier
                         .align(Alignment.CenterStart)
                         .size(28.dp)
-                        .clickable { navController.popBackStack() },
-                tint = Pink80,
+                        .clickable {
+                            navController.popBackStack()
+                        },
             )
 
             Text(
                 text = stringResource(R.string.notification_setup),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
+                color = Color.Black,
             )
         }
 
@@ -117,36 +122,15 @@ fun notiSetup(navController: NavHostController) {
         // Date Picker Card
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = boxBackground),
-            elevation = CardDefaults.cardElevation(4.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFE6F7F7)),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(0.dp),
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = stringResource(R.string.select_date),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 36.sp,
-                )
+                Text(text = stringResource(R.string.select_date), fontSize = 36.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(R.string.enter_date),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_calendar),
-                        contentDescription = stringResource(R.string.calendar_icon),
-                        tint = Color.Black,
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
+                Text(text = stringResource(R.string.enter_date), fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
                     value = fromDate,
@@ -154,81 +138,105 @@ fun notiSetup(navController: NavHostController) {
                     placeholder = { Text(stringResource(R.string.placeholder_date)) },
                     label = { Text(stringResource(R.string.label_from)) },
                     readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_calendar),
+                            contentDescription = null,
+                        )
+                    },
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                showDatePicker { selected ->
-                                    fromDate = selected
-                                }
-                            },
+                            .clickable { showDatePicker { fromDate = it } },
                     shape = RoundedCornerShape(8.dp),
                 )
 
-                Spacer(modifier = Modifier.height(36.dp))
-
+                Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
                     value = toDate,
                     onValueChange = {},
                     placeholder = { Text(stringResource(R.string.placeholder_date)) },
                     label = { Text(stringResource(R.string.label_to)) },
                     readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_calendar),
+                            contentDescription = null,
+                        )
+                    },
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                showDatePicker { selected ->
-                                    toDate = selected
-                                }
-                            },
+                            .clickable { showDatePicker { toDate = it } },
                     shape = RoundedCornerShape(8.dp),
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = stringResource(R.string.cancel),
                         color = Color.Gray,
-                        modifier = Modifier.clickable { /* TODO */ },
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable { navController.popBackStack() },
                     )
-                    Spacer(modifier = Modifier.width(36.dp))
                     Text(
                         text = stringResource(R.string.ok),
-                        color = Color.Black,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.clickable { /* TODO */ },
+                        color = Color(0xFF00BCD4),
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable { /* xác nhận ngày */ },
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
+        // Frequency Dropdown
         frequencyDropdown(
             selectedOption = selectedFrequency,
             onOptionSelected = { selectedFrequency = it },
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { /* TODO */ },
+            onClick = {
+                if (fromDate.isNotEmpty() && toDate.isNotEmpty()) {
+                    val sharedPref = context.getSharedPreferences("noti_prefer", Context.MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        putString("fromDate", fromDate)
+                        putString("toDate", toDate)
+                        putString("frequency", selectedFrequency)
+                        apply()
+                    }
+                    openGoogleCalendar(
+                        context,
+                        title = context.getString(R.string.english_practice),
+                        description = "Daily reminder for English learning",
+                        startDate = fromDate,
+                        endDate = toDate,
+                        frequency = selectedFrequency,
+                    )
+                    createNotificationUtil(context)
+                    scheduleNotification(context)
+                    navController.popBackStack()
+                }
+            },
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(80.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Cowbell),
-            shape = RoundedCornerShape(16.dp),
+                    .height(100.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFE082)),
+            shape = RoundedCornerShape(24.dp),
         ) {
             Text(
                 text = stringResource(R.string.complete),
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp,
-                color = Color.Black,
+                fontSize = 36.sp,
+                color = Color.Gray,
             )
         }
     }
@@ -244,7 +252,6 @@ fun frequencyDropdown(
             stringResource(R.string.once_everyday),
             stringResource(R.string.twice_a_day),
             stringResource(R.string.weekly),
-            stringResource(R.string.custom),
         )
     var expanded by remember { mutableStateOf(false) }
 
