@@ -54,5 +54,10 @@
     <string name="welcome_to">Welcome to</string>
     <string name="project_01">Project 01</string>
     <string name="let_s_go">Let\'s go</string>
-
+    <string name="no_address">No Address</string>
+    <string name="no_age">No Age</string>
+    <string name="pick_image">Pick Image</string>
+    <string name="fullname">Full name</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="password_mismatch">Password Mismatch</string>
 </resources>

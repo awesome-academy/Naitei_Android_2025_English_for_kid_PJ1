@@ -2,6 +2,7 @@
 
 package com.example.englishappforkid.presentation.screens.auth
 
+import AuthViewModel
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,13 +13,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,6 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -87,6 +88,7 @@ fun signInScreen(
         }
     }
 
+    // Google Sign-In config
     val gso =
         GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -94,11 +96,8 @@ fun signInScreen(
             .requestEmail()
             .build()
     val googleSignInClient = GoogleSignIn.getClient(context, gso)
-
     val googleLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult(),
-        ) { result ->
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
@@ -116,103 +115,105 @@ fun signInScreen(
                     ).show()
             }
         }
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Background
         Image(
             painter = painterResource(id = R.drawable.back_ground),
-            contentDescription = "Background",
+            contentDescription = "Background image",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds,
         )
+
         // Back Button
         Box(
             modifier =
                 Modifier
-                    .padding(25.dp)
-                    .size(45.dp)
-                    .border(1.dp, Color.Black, RoundedCornerShape(22.5.dp))
-                    .background(Orange, shape = RoundedCornerShape(22.5.dp))
+                    .padding(16.dp)
+                    .size(40.dp)
+                    .border(1.dp, Color.Black, RoundedCornerShape(20.dp))
+                    .background(Orange, shape = RoundedCornerShape(20.dp))
                     .clickable { navController.popBackStack() },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                modifier = Modifier.size(25.dp),
+                contentDescription = stringResource(R.string.back),
                 tint = Color.Black,
             )
         }
-        Image(
-            painter = painterResource(id = R.drawable.ic_screen_login),
-            contentDescription = "Astronaut with a star",
-            modifier =
-                Modifier
-                    .size(250.dp)
-                    .align(Alignment.TopCenter)
-                    .offset(y = (30.dp)),
-        )
+
         Column(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 32.dp),
-            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(300.dp))
+            Spacer(modifier = Modifier.height(90.dp))
 
+            // Astronaut Image
+            Image(
+                painter = painterResource(id = R.drawable.ic_screen_login),
+                contentDescription = "astronaut_image",
+                modifier = Modifier.size(200.dp),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Title
             Text(
                 text = stringResource(R.string.sign_in),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
             )
-            Spacer(modifier = Modifier.height(32.dp))
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Email field
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = { authViewModel.onEmailChange(it) },
                 label = { Text(stringResource(R.string.email)) },
                 modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Down) },
             )
-            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Password field
             OutlinedTextField(
                 value = uiState.pass,
                 onValueChange = { authViewModel.onPasswordChange(it) },
                 label = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.fillMaxWidth(),
-                visualTransformation =
-                    if (passwordVisibility) {
-                        VisualTransformation.None
-                    } else {
-                        PasswordVisualTransformation()
-                    },
+                singleLine = true,
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                         Icon(
-                            imageVector =
-                                if (passwordVisibility) {
-                                    Icons.Filled.Visibility
-                                } else {
-                                    Icons.Filled.VisibilityOff
-                                },
-                            contentDescription = "Toggle Password visibility",
-                            modifier = Modifier.size(24.dp),
+                            imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = "toggle password visibility",
                         )
                     }
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions =
-                    KeyboardActions(onDone = {
+                    KeyboardActions {
                         authViewModel.signIn {
                             navController.navigate(ScreenRoutes.HOME) {
                                 popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
                             }
                         }
-                    }),
+                    },
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Remember me & Forgot password
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -223,16 +224,19 @@ fun signInScreen(
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = { isChecked = it },
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(20.dp),
                     )
-                    Text(stringResource(R.string.remember_me), fontSize = 12.sp, color = Color.Black)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(stringResource(R.string.remember_me), fontSize = 14.sp, color = Color.Black)
                 }
                 TextButton(onClick = { navController.navigate(ScreenRoutes.FORGOT_PASSWORD) }) {
-                    Text(stringResource(R.string.forgot_password), fontSize = 12.sp, color = ForgotPasswordBlue)
+                    Text(stringResource(R.string.forgot_password), fontSize = 14.sp, color = ForgotPasswordBlue)
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Sign In button
             Button(
                 onClick = {
                     authViewModel.signIn {
@@ -245,54 +249,56 @@ fun signInScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(60.dp),
+                        .height(55.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonYellow),
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
-                    Text(stringResource(R.string.sign_in), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                    Text(stringResource(R.string.sign_in), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.don_t_have_an_account), fontSize = 14.sp, color = Color.Black)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    TextButton(
-                        onClick = { navController.navigate(ScreenRoutes.SIGN_UP) },
-                        contentPadding = PaddingValues(0.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.sign_in),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = ForgotPasswordBlue,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth(),
+            // Sign Up
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.don_t_have_an_account), fontSize = 14.sp, color = Color.Black)
+                Spacer(modifier = Modifier.width(4.dp))
+                TextButton(
+                    onClick = { navController.navigate(ScreenRoutes.SIGN_UP) },
                 ) {
-                    HorizontalDivider(Modifier.weight(1f), color = Color.Black)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Or", color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    HorizontalDivider(Modifier.weight(1f), color = Color.Black)
+                    Text(stringResource(R.string.sign_up), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = ForgotPasswordBlue)
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Divider with OR
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f),
+                    thickness = DividerDefaults.Thickness,
+                    color = Color.Black,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Or", color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(8.dp))
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f),
+                    thickness = DividerDefaults.Thickness,
+                    color = Color.Black,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Google Sign-In button
             Button(
                 onClick = {
                     val signInIntent = googleSignInClient.signInIntent
@@ -302,23 +308,20 @@ fun signInScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(60.dp),
+                        .height(55.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             ) {
-                Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.CenterStart,
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_google_logo),
-                        contentDescription = "Google Logo",
+                        contentDescription = "google logo",
                         modifier = Modifier.size(24.dp),
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.sign_in_by_google), fontSize = 18.sp, color = Color.Black)
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.sign_in_by_google), fontSize = 20.sp, color = Color.Red)
-                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }

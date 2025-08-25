@@ -125,7 +125,7 @@ class ProfileViewModel(
 
     private fun getBytesFromUri(uri: Uri): ByteArray {
         val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-        return inputStream?.readBytes() ?: throw Exception("Don't read image")
+        return inputStream?.readBytes() ?: throw Exception("Can't read image")
     }
 
     private suspend fun saveProfile(

@@ -39,12 +39,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.englishappforkid.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,13 +69,16 @@ fun editProfileScreen(
             selectedImageUri = uri
         }
 
-    // Đồng bộ dữ liệu khi userProfile thay đổi
+    val noName = stringResource(R.string.no_name)
+    val noAddress = stringResource(R.string.no_address)
+    val noAge = stringResource(R.string.no_age)
+
     LaunchedEffect(userProfileState) {
         userProfileState?.let {
-            nickname = if (it.nickname.isNotBlank()) it.nickname else "No Name"
-            fullname = if (it.fullname.isNotBlank()) it.fullname else "No Name"
-            address = if (it.address.isNotBlank()) it.address else "No Address"
-            age = if (it.age.isNotBlank()) it.age else "No Age"
+            nickname = if (it.nickname.isNotBlank()) it.nickname else noName
+            fullname = if (it.fullname.isNotBlank()) it.fullname else noName
+            address = if (it.address.isNotBlank()) it.address else noAddress
+            age = if (it.age.isNotBlank()) it.age else noAge
         }
     }
 
@@ -81,12 +86,16 @@ fun editProfileScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Edit Profile", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(R.string.edit_profile),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 },
                 navigationIcon = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.back),
                         modifier =
                             Modifier
                                 .padding(horizontal = 16.dp)
@@ -97,10 +106,9 @@ fun editProfileScreen(
             )
         },
     ) { innerPadding ->
-        val profile = userProfileState // local val để tránh smart cast error
+        val profile = userProfileState
 
         if (profile == null) {
-            // Hiển thị loading khi chưa có dữ liệu
             Box(
                 modifier =
                     Modifier
@@ -138,11 +146,12 @@ fun editProfileScreen(
                                         .data(selectedImageUri)
                                         .crossfade(true)
                                         .build(),
-                                contentDescription = "Avatar",
+                                contentDescription = stringResource(R.string.pick_image),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
+
                         profile.avatarUrl.isNotBlank() -> {
                             AsyncImage(
                                 model =
@@ -151,24 +160,24 @@ fun editProfileScreen(
                                         .data(profile.avatarUrl)
                                         .crossfade(true)
                                         .build(),
-                                contentDescription = "Avatar",
+                                contentDescription = stringResource(R.string.pick_image),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
+
                         else -> {
-                            Text("Pick Image", color = Color.DarkGray)
+                            Text(stringResource(R.string.pick_image), color = Color.DarkGray)
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Email (không cho chỉnh sửa)
                 OutlinedTextField(
                     value = profile.email,
                     onValueChange = {},
-                    label = { Text("Email") },
+                    label = { Text(stringResource(R.string.email)) },
                     enabled = false,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -178,15 +187,16 @@ fun editProfileScreen(
                 OutlinedTextField(
                     value = nickname,
                     onValueChange = { nickname = it },
-                    label = { Text("Nickname") },
+                    label = { Text(stringResource(R.string.nickname)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
+
                 OutlinedTextField(
                     value = fullname,
                     onValueChange = { fullname = it },
-                    label = { Text("Fullname") },
+                    label = { Text(stringResource(R.string.fullname)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
@@ -195,7 +205,7 @@ fun editProfileScreen(
                 OutlinedTextField(
                     value = address,
                     onValueChange = { address = it },
-                    label = { Text("Address") },
+                    label = { Text(stringResource(R.string.address)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
@@ -204,7 +214,7 @@ fun editProfileScreen(
                 OutlinedTextField(
                     value = age,
                     onValueChange = { age = it },
-                    label = { Text("Age") },
+                    label = { Text(stringResource(R.string.age)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
@@ -213,10 +223,10 @@ fun editProfileScreen(
                 Button(
                     onClick = {
                         viewModel.updateProfile(
-                            address = if (address == "No Address") "" else address,
-                            nickname = if (nickname == "No Name") "" else nickname,
-                            fullname = if (fullname == "No Name") "" else fullname,
-                            age = if (age == "No Age") "" else age,
+                            address = if (address == noAddress) "" else address,
+                            nickname = if (nickname == noName) "" else nickname,
+                            fullname = if (fullname == noName) "" else fullname,
+                            age = if (age == noAge) "" else age,
                             newAvatarUri = selectedImageUri,
                         )
                         navController.popBackStack()
@@ -233,9 +243,16 @@ fun editProfileScreen(
                     enabled = !isUpdating,
                 ) {
                     if (isUpdating) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp),
+                        )
                     } else {
-                        Text("Save Changes", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(
+                            stringResource(R.string.save_changes),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                        )
                     }
                 }
             }

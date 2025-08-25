@@ -1,5 +1,6 @@
 package com.example.englishappforkid.presentation.screens.auth
 
+import AuthViewModel
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -80,16 +81,14 @@ fun signUpScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.back_ground),
-            contentDescription = "Background",
+            contentDescription = "back ground image",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds,
         )
-        // Back Button
+
         Box(
             modifier =
                 Modifier
@@ -102,19 +101,20 @@ fun signUpScreen(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.back),
                 modifier = Modifier.size(25.dp),
                 tint = Color.Black,
             )
         }
+
         Image(
             painter = painterResource(id = R.drawable.ic_screen_login),
-            contentDescription = "Astronaut with a star",
+            contentDescription = "astraunat image",
             modifier =
                 Modifier
                     .size(250.dp)
                     .align(Alignment.TopCenter)
-                    .offset(y = (30.dp)),
+                    .offset(y = 30.dp),
         )
 
         Column(
@@ -126,8 +126,9 @@ fun signUpScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(300.dp))
+
             Text(
-                stringResource(R.string.sign_up),
+                text = stringResource(R.string.sign_up),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -149,17 +150,12 @@ fun signUpScreen(
                 onValueChange = { authViewModel.onPasswordChange(it) },
                 label = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.fillMaxWidth(),
-                visualTransformation =
-                    if (confirmPasswordVisibility) {
-                        VisualTransformation.None
-                    } else {
-                        PasswordVisualTransformation()
-                    },
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                         Icon(
                             imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = "Toggle password visibility",
+                            contentDescription = "Toggle password vísibility",
                         )
                     }
                 },
@@ -173,12 +169,7 @@ fun signUpScreen(
                 onValueChange = { authViewModel.onConfirmPasswordChange(it) },
                 label = { Text(stringResource(R.string.confirm_password)) },
                 modifier = Modifier.fillMaxWidth(),
-                visualTransformation =
-                    if (confirmPasswordVisibility) {
-                        VisualTransformation.None
-                    } else {
-                        PasswordVisualTransformation()
-                    },
+                visualTransformation = if (confirmPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { confirmPasswordVisibility = !confirmPasswordVisibility }) {
                         Icon(
@@ -190,21 +181,30 @@ fun signUpScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions =
                     KeyboardActions(onDone = {
+                        if (uiState.pass == uiState.confirmPass) {
+                            authViewModel.signUp {
+                                navController.navigate(ScreenRoutes.HOME) {
+                                    popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
+                                }
+                            }
+                        } else {
+                            Toast.makeText(context, R.string.password_mismatch, Toast.LENGTH_SHORT).show()
+                        }
+                    }),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (uiState.pass == uiState.confirmPass) {
                         authViewModel.signUp {
                             navController.navigate(ScreenRoutes.HOME) {
                                 popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
                             }
                         }
-                    }),
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    authViewModel.signUp {
-                        navController.navigate(ScreenRoutes.HOME) {
-                            popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
-                        }
+                    } else {
+                        Toast.makeText(context, R.string.password_mismatch, Toast.LENGTH_SHORT).show()
                     }
                 },
                 enabled = !uiState.isLoading,
@@ -221,29 +221,23 @@ fun signUpScreen(
                     Text(stringResource(R.string.sign_up), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.already_have_an_account), fontSize = 14.sp, color = Color.Black)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    TextButton(
-                        onClick = { navController.navigate(ScreenRoutes.SIGN_IN) },
-                        contentPadding = PaddingValues(0.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.sign_in),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = ForgotPasswordBlue,
-                        )
-                    }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.already_have_an_account), fontSize = 14.sp, color = Color.Black)
+                Spacer(modifier = Modifier.width(4.dp))
+                TextButton(
+                    onClick = { navController.navigate(ScreenRoutes.SIGN_IN) },
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.sign_in),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ForgotPasswordBlue,
+                    )
                 }
-                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }
