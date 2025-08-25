@@ -1,9 +1,7 @@
-@file:Suppress("DEPRECATION")
-
-package com.example.englishappforkid.presentation.screens.auth
 
 import androidx.lifecycle.ViewModel
 import com.example.englishappforkid.data.model.UserProfile
+import com.example.englishappforkid.presentation.screens.auth.AuthState
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -31,6 +29,7 @@ class AuthViewModel : ViewModel() {
         _uiState.update { it.copy(confirmPass = confirmPass) }
     }
 
+    // ✅ Đăng ký tài khoản mới
     fun signUp(onSuccess: () -> Unit) {
         _uiState.update { it.copy(isLoading = true, error = null) }
 
@@ -47,7 +46,7 @@ class AuthViewModel : ViewModel() {
             .createUserWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
+                    saveUserProfileIfNew(auth.currentUser?.uid, auth.currentUser?.email)
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -58,6 +57,7 @@ class AuthViewModel : ViewModel() {
             }
     }
 
+    // ✅ Đăng nhập
     fun signIn(onSuccess: () -> Unit) {
         _uiState.update { it.copy(isLoading = true, error = null) }
 
@@ -70,7 +70,8 @@ class AuthViewModel : ViewModel() {
             .signInWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
+                    // Không overwrite profile, chỉ fetch
+                    fetchUserProfile(auth.currentUser?.uid)
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -81,6 +82,7 @@ class AuthViewModel : ViewModel() {
             }
     }
 
+    // ✅ Đăng nhập Google
     fun signInWithGoogle(
         account: GoogleSignInAccount,
         onSuccess: () -> Unit,
@@ -92,7 +94,7 @@ class AuthViewModel : ViewModel() {
             .signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveUserProfileToFirestore(auth.currentUser?.uid, auth.currentUser?.email)
+                    saveUserProfileIfNew(auth.currentUser?.uid, auth.currentUser?.email)
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -103,29 +105,50 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    private fun saveUserProfileToFirestore(
+    // ✅ Chỉ tạo mới nếu chưa có
+    private fun saveUserProfileIfNew(
         uid: String?,
         email: String?,
     ) {
         if (uid == null || email == null) return
 
-        val userProfile =
-            UserProfile(
-                uid = uid,
-                email = email,
-                fullname = "",
-                address = "",
-                nickname = "",
-                age = "",
-                avatarUrl = "",
-            )
+        val docRef = db.collection("user_profiles").document(uid)
+        docRef
+            .get()
+            .addOnSuccessListener { document ->
+                if (!document.exists()) {
+                    val userProfile =
+                        UserProfile(
+                            uid = uid,
+                            email = email,
+                            fullname = "",
+                            address = "",
+                            nickname = "",
+                            age = "",
+                            avatarUrl = "",
+                        )
+                    docRef.set(userProfile)
+                }
+            }.addOnFailureListener { e ->
+                _uiState.update { it.copy(error = "Failed to check user profile: ${e.message}") }
+            }
+    }
+
+    // ✅ Fetch dữ liệu từ Firestore khi login
+    private fun fetchUserProfile(uid: String?) {
+        if (uid == null) return
+
         db
             .collection("user_profiles")
             .document(uid)
-            .set(userProfile)
-            .addOnSuccessListener {
+            .get()
+            .addOnSuccessListener { document ->
+                val profile = document.toObject(UserProfile::class.java)
+                if (profile != null) {
+                    _uiState.update { it.copy(currentUser = profile) }
+                }
             }.addOnFailureListener { e ->
-                _uiState.update { it.copy(error = "Failed to save user profile: ${e.message}") }
+                _uiState.update { it.copy(error = "Failed to load user profile: ${e.message}") }
             }
     }
 }
