@@ -6,5 +6,5 @@ data class VideoItem(
     val thumbnailUrl: String,
     val videoId: String,
     val description: String,
-    var localPath: String? = null // Đường dẫn tệp đã tải về máy
+    var localPath: String? = null,
 )

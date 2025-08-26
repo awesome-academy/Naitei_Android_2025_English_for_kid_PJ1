@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,9 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -79,7 +75,6 @@ fun downloadedVideoPlayerScreen(
     val context = LocalContext.current
     val dbHelper = remember { DBHelper(context) }
 
-    // Lấy video từ CSDL dựa trên videoId (link)
     val videoItem by remember(videoId) { mutableStateOf(dbHelper.getVideoById(videoId)) }
     val allDownloadedVideos = remember { dbHelper.getAllVideos() }
 
@@ -89,9 +84,8 @@ fun downloadedVideoPlayerScreen(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("Không tìm thấy video đã tải.")
         }
-        // Có thể tự động quay lại sau một lúc nếu video không tồn tại
         LaunchedEffect(Unit) {
-            delay(1500) // Chờ 1.5 giây
+            delay(1500)
             navController.popBackStack()
         }
         return
@@ -101,7 +95,6 @@ fun downloadedVideoPlayerScreen(
     val exoPlayer = playerViewModel.exoPlayer
 
     DisposableEffect(videoItem) {
-        // Chắc chắn rằng videoItem không null trước khi phát
         videoItem?.let { playerViewModel.playVideo(it) }
         onDispose { exoPlayer.pause() }
     }
@@ -152,7 +145,7 @@ fun downloadedVideoPlayerScreen(
                     onClick = { isFullscreen = false },
                     modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
                 ) {
-                    Icon(Icons.Default.FullscreenExit, "Thoát toàn màn hình", tint = Color.White)
+                    Icon(Icons.Default.FullscreenExit, "Exit full screen", tint = Color.White)
                 }
             }
         } else {
@@ -200,7 +193,6 @@ fun downloadedVideoPlayerScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Thanh điều khiển
                     Row(
                         modifier =
                             Modifier
@@ -226,18 +218,15 @@ fun downloadedVideoPlayerScreen(
                                     inactiveTrackColor = Color.LightGray.copy(alpha = 0.5f),
                                 ),
                         )
-                        // Nút Xóa
                         IconButton(onClick = {
-                            // Xóa tệp cục bộ
                             videoItem?.localPath?.let {
                                 val file = File(it)
                                 if (file.exists()) {
                                     file.delete()
                                 }
                             }
-                            // Xóa video khỏi CSDL
                             dbHelper.removeVideoById(videoItem!!.videoId)
-                            Toast.makeText(context, "Đã xóa video!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "deleted video!", Toast.LENGTH_SHORT).show()
                             navController.popBackStack()
                         }) {
                             Icon(Icons.Default.Delete, contentDescription = "Xóa", tint = Color.White)
@@ -268,10 +257,9 @@ fun downloadedVideoPlayerScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     )
 
-                    // Lưới video gợi ý
                     Column(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         suggestedVideos.chunked(2).forEach { rowItems ->
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -281,7 +269,7 @@ fun downloadedVideoPlayerScreen(
                                         onClick = {
                                             navController.navigate("downloaded_player/${suggestion.videoId}")
                                         },
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f),
                                     )
                                 }
                                 if (rowItems.size < 2) {
@@ -296,7 +284,6 @@ fun downloadedVideoPlayerScreen(
     }
 }
 
-// Giữ lại Composable này để hiển thị item trong lưới
 @Composable
 fun suggestedVideoItem(
     videoItem: VideoItem,
@@ -309,8 +296,6 @@ fun suggestedVideoItem(
     ) {
         Column {
             AsyncImage(
-                // Đối với video đã tải, có thể hiển thị thumbnail từ tệp cục bộ nếu có
-                // nhưng ở đây vẫn dùng thumbnailUrl cho đơn giản
                 model = videoItem.thumbnailUrl,
                 contentDescription = videoItem.title,
                 contentScale = ContentScale.Crop,

@@ -4,13 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import com.example.englishappforkid.data.model.VideoItem
 
 class DBHelper(
     context: Context,
 ) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
-
     override fun onCreate(db: SQLiteDatabase?) {
         val createVideoTable =
             """
@@ -35,9 +33,6 @@ class DBHelper(
         onCreate(db)
     }
 
-    /**
-     * Thêm một video mới vào cơ sở dữ liệu.
-     */
     fun addVideo(video: VideoItem) {
         val db = this.writableDatabase
         val contentValues =
@@ -45,22 +40,16 @@ class DBHelper(
                 put(ID_COLUMN, video.id)
                 put(TITLE_COLUMN, video.title)
                 put(DESCRIPTION_COLUMN, video.description)
-                put(VIDEOID_COLUMN, video.videoId) // videoId ở đây là URL
+                put(VIDEOID_COLUMN, video.videoId)
                 put(THUMBNAILS_COLUMN, video.thumbnailUrl)
                 put(LOCAL_PATH_COLUMN, video.localPath)
             }
-        // Sử dụng insertWithOnConflict để tránh lỗi nếu cố thêm video đã tồn tại (dựa trên PRIMARY KEY)
         db.insertWithOnConflict(TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE)
-        Log.d("DB_ADD", "Đã thêm hoặc thay thế video với ID: '${video.id}'")
     }
 
-    /**
-     * Lấy thông tin video dựa trên ID (khóa chính).
-     */
     fun getVideoById(id: String): VideoItem? {
         val db = this.readableDatabase
         var videoItem: VideoItem? = null
-        // Sửa: Tìm kiếm bằng ID (khóa chính) thay vì URL
         val cursor =
             db.query(
                 TABLE_NAME,
@@ -80,12 +69,8 @@ class DBHelper(
         return videoItem
     }
 
-    /**
-     * Kiểm tra xem một video đã tồn tại trong CSDL dựa trên ID hay chưa.
-     */
     fun isVideoExistsById(id: String): Boolean {
         val db = this.readableDatabase
-        // Sửa: Truy vấn bằng ID
         val query = "SELECT COUNT(*) FROM $TABLE_NAME WHERE $ID_COLUMN = ?"
         val cursor = db.rawQuery(query, arrayOf(id))
         var exists = false
@@ -119,29 +104,31 @@ class DBHelper(
      * Cập nhật đường dẫn file cục bộ cho một video dựa trên ID của nó.
      * Phương thức này rất quan trọng sau khi tải video thành công.
      */
-    fun updateVideoLocalPath(id: String, localPath: String) {
+    fun updateVideoLocalPath(
+        id: String,
+        localPath: String,
+    ) {
         val db = this.writableDatabase
-        val values = ContentValues().apply {
-            put(LOCAL_PATH_COLUMN, localPath)
-        }
-        // Sửa: Cập nhật bằng ID
+        val values =
+            ContentValues().apply {
+                put(LOCAL_PATH_COLUMN, localPath)
+            }
         val rowsAffected = db.update(TABLE_NAME, values, "$ID_COLUMN = ?", arrayOf(id))
-        Log.d("DB_UPDATE", "Đã cập nhật $rowsAffected dòng cho ID: $id với đường dẫn: $localPath")
     }
 
-    /**
-     * Lấy đường dẫn file cục bộ của video dựa trên ID.
-     */
     fun getLocalPathById(id: String): String? {
         val db = this.readableDatabase
         var localPath: String? = null
-        val cursor = db.query(
-            TABLE_NAME,
-            arrayOf(LOCAL_PATH_COLUMN),
-            "$ID_COLUMN = ?", // Sửa: Truy vấn bằng ID
-            arrayOf(id),
-            null, null, null
-        )
+        val cursor =
+            db.query(
+                TABLE_NAME,
+                arrayOf(LOCAL_PATH_COLUMN),
+                "$ID_COLUMN = ?",
+                arrayOf(id),
+                null,
+                null,
+                null,
+            )
         cursor.use {
             if (it.moveToFirst()) {
                 val localPathColIndex = it.getColumnIndex(LOCAL_PATH_COLUMN)
@@ -158,14 +145,9 @@ class DBHelper(
      */
     fun removeVideoById(id: String) {
         val db = this.writableDatabase
-        // Sửa: Xóa bằng ID (khóa chính)
         val rowsDeleted = db.delete(TABLE_NAME, "$ID_COLUMN = ?", arrayOf(id))
-        Log.d("DB_DELETE", "Đã xóa $rowsDeleted dòng cho ID: $id")
     }
 
-    /**
-     * Hàm tiện ích để chuyển đổi một dòng từ Cursor thành đối tượng VideoItem.
-     */
     private fun cursorToVideoItem(cursor: android.database.Cursor): VideoItem {
         val idCol = cursor.getColumnIndex(ID_COLUMN)
         val titleCol = cursor.getColumnIndex(TITLE_COLUMN)
@@ -178,21 +160,20 @@ class DBHelper(
             id = cursor.getString(idCol),
             title = cursor.getString(titleCol),
             description = cursor.getString(descCol),
-            videoId = cursor.getString(videoIdCol), // Đây là URL
+            videoId = cursor.getString(videoIdCol),
             thumbnailUrl = cursor.getString(thumbCol),
-            localPath = cursor.getString(localPathCol)
+            localPath = cursor.getString(localPathCol),
         )
     }
 
     companion object {
-        // Tăng phiên bản DB để kích hoạt onUpgrade, tạo lại bảng với cấu trúc đúng
         private const val DB_VERSION = 3
         private const val DB_NAME = "english_videos.db"
         private const val TABLE_NAME = "videos"
         const val ID_COLUMN = "id"
         const val TITLE_COLUMN = "title"
         const val DESCRIPTION_COLUMN = "description"
-        const val VIDEOID_COLUMN = "video_url" // Đổi tên cho rõ nghĩa
+        const val VIDEOID_COLUMN = "video_url"
         const val THUMBNAILS_COLUMN = "thumbnail_url"
         const val LOCAL_PATH_COLUMN = "local_path"
     }

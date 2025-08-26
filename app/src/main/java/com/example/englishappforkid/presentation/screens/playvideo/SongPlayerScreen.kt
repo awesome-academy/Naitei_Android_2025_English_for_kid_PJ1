@@ -66,31 +66,25 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun songScreen(
-    videoId: String, // Đây là id của bài hát, không phải link
+    videoId: String,
     navController: NavHostController,
     playerViewModel: VideoPlayerViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val dbHelper = remember { DBHelper(context) }
 
-    // Lấy thông tin cơ bản của bài hát từ data source
     val baseVideoItem = remember(videoId) { SongDataSource.songs.find { it.id == videoId } }
 
-    // State để giữ phiên bản cuối cùng của video item (có thể đã cập nhật localPath)
     var videoItem by remember { mutableStateOf<VideoItem?>(null) }
 
     var isFullscreen by remember { mutableStateOf(false) }
 
-    // Sửa lỗi tại đây: Dùng đúng hàm và đúng ID để kiểm tra file cục bộ
     LaunchedEffect(baseVideoItem) {
         baseVideoItem?.let { baseItem ->
-            // Dùng getLocalPathById và truyền vào ID ngắn
             val localPath = dbHelper.getLocalPathById(baseItem.id)
             if (localPath != null && File(localPath).exists()) {
-                // Nếu có file, cập nhật state với đường dẫn cục bộ
                 videoItem = baseItem.copy(localPath = localPath)
             } else {
-                // Nếu không, dùng item gốc
                 videoItem = baseItem
             }
         }
@@ -106,7 +100,6 @@ fun songScreen(
     playerViewModel.initializePlayer()
     val exoPlayer = playerViewModel.exoPlayer
 
-    // Phát video khi videoItem (có thể là online hoặc offline) đã sẵn sàng
     DisposableEffect(videoItem) {
         videoItem?.let { playerViewModel.playVideo(it) }
         onDispose {
@@ -212,7 +205,6 @@ fun songScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Thanh điều khiển
                     Row(
                         modifier =
                             Modifier
@@ -238,9 +230,7 @@ fun songScreen(
                                     inactiveTrackColor = Color.LightGray.copy(alpha = 0.5f),
                                 ),
                         )
-                        // Sửa lỗi tại đây: Đơn giản hóa logic tải xuống
                         IconButton(onClick = {
-                            // ViewModel đã xử lý tất cả logic phức tạp
                             videoItem?.let { playerViewModel.startDownload(it) }
                         }) {
                             Icon(Icons.Default.Download, "Download", tint = Color.White)
@@ -271,10 +261,9 @@ fun songScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     )
 
-                    // Lưới các bài hát gợi ý
                     Column(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         suggestedSongs.chunked(2).forEach { rowItems ->
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -282,7 +271,7 @@ fun songScreen(
                                     suggestedSongItem(
                                         videoItem = suggestion,
                                         onClick = { navController.navigate("song_player/${suggestion.id}") },
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f),
                                     )
                                 }
                                 if (rowItems.size < 2) {
@@ -312,9 +301,10 @@ fun suggestedSongItem(
                 model = videoItem.thumbnailUrl,
                 contentDescription = videoItem.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(90.dp),
             )
             Text(
                 text = videoItem.title,

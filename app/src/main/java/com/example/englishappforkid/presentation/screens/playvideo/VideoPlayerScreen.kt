@@ -63,7 +63,7 @@ import coil.compose.AsyncImage
 import com.example.englishappforkid.data.VideoDataSource
 import com.example.englishappforkid.data.model.VideoItem
 import kotlinx.coroutines.delay
-import java.io.File // <--- THÊM DÒNG NÀY VÀO
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,10 +73,8 @@ fun videoScreen(
     playerViewModel: VideoPlayerViewModel = viewModel(),
 ) {
     val context = LocalContext.current
-    // Tìm videoItem dựa trên videoId từ nguồn dữ liệu
     val baseVideoItem = remember(videoId) { VideoDataSource.getVideoById(videoId) }
     var finalVideoItem by remember { mutableStateOf<VideoItem?>(null) }
-
 
     val dbHelper = remember { DBHelper(context) }
     var isFullscreen by remember { mutableStateOf(false) }
@@ -92,20 +90,16 @@ fun videoScreen(
         }
     }
 
-
     if (finalVideoItem == null) {
-        // Có thể hiển thị một màn hình lỗi ở đây
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("Video not found!")
         }
         return
     }
 
-    // Khởi tạo player từ ViewModel
     playerViewModel.initializePlayer()
     val exoPlayer = playerViewModel.exoPlayer
 
-    // Effect này sẽ chạy khi videoItem thay đổi
     DisposableEffect(finalVideoItem) {
         finalVideoItem?.let {
             playerViewModel.playVideo(it)
@@ -115,8 +109,6 @@ fun videoScreen(
         }
     }
 
-
-    // Các state và effect để theo dõi trạng thái của player
     var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
     var currentPosition by remember { mutableStateOf(0L) }
     var duration by remember { mutableStateOf(0L) }
@@ -149,15 +141,12 @@ fun videoScreen(
         }
     }
 
-    // Xử lý nút back của hệ thống khi ở chế độ toàn màn hình
     BackHandler(enabled = isFullscreen) {
         isFullscreen = false
     }
 
-    // Giao diện chính
     Box(modifier = Modifier.fillMaxSize()) {
         if (isFullscreen) {
-            // CHẾ ĐỘ TOÀN MÀN HÌNH
             Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
                 AndroidView(
                     factory = { PlayerView(it).apply { useController = false } },
@@ -172,11 +161,10 @@ fun videoScreen(
                 }
             }
         } else {
-            // CHẾ ĐỘ BÌNH THƯỜNG
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        windowInsets = WindowInsets(0), // Bỏ khoảng trắng thừa ở status bar
+                        windowInsets = WindowInsets(0),
                         title = {
                             Text(
                                 text = finalVideoItem!!.title,
@@ -198,7 +186,6 @@ fun videoScreen(
                     )
                 },
             ) { innerPadding ->
-                // Lấy danh sách video gợi ý
                 val suggestedVideos =
                     remember(videoId) {
                         VideoDataSource.videoStories
@@ -211,10 +198,9 @@ fun videoScreen(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(innerPadding) // Padding bắt buộc của Scaffold
+                            .padding(innerPadding)
                             .background(Color.White),
                 ) {
-                    // Video player
                     AndroidView(
                         factory = { PlayerView(it).apply { useController = false } },
                         modifier =
@@ -227,7 +213,6 @@ fun videoScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Khung điều khiển
                     Row(
                         modifier =
                             Modifier
@@ -265,7 +250,6 @@ fun videoScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Mô tả video
                     Box(
                         modifier =
                             Modifier
@@ -279,17 +263,15 @@ fun videoScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Tiêu đề video gợi ý
                     Text(
                         text = "Next Videos",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     )
 
-                    // Lưới video gợi ý
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxWidth().height(300.dp), // Thêm chiều cao để cuộn được
+                        modifier = Modifier.fillMaxWidth().height(300.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
