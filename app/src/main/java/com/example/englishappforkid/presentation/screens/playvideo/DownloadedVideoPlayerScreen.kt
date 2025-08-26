@@ -78,7 +78,10 @@ fun downloadedVideoPlayerScreen(
     val videoItem by remember(videoId) { mutableStateOf(dbHelper.getVideoById(videoId)) }
     val allDownloadedVideos = remember { dbHelper.getAllVideos() }
 
-    var isFullscreen by remember { mutableStateOf(false) }
+    var isFullscreen by remember { mutableStateOf(playerViewModel.isFullscreen) }
+    LaunchedEffect(isFullscreen) {
+        playerViewModel.isFullscreen = isFullscreen
+    }
 
     if (videoItem == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -94,8 +97,9 @@ fun downloadedVideoPlayerScreen(
     val exoPlayer = playerViewModel.exoPlayer
 
     DisposableEffect(videoItem) {
-        videoItem?.let { playerViewModel.playVideo(it) }
-        onDispose { exoPlayer.pause() }
+        videoItem?.let { playerViewModel.playVideo(it, resume = true) }
+        onDispose {
+        }
     }
 
     var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
@@ -169,7 +173,7 @@ fun downloadedVideoPlayerScreen(
             ) { innerPadding ->
                 val suggestedVideos =
                     remember(videoId) {
-                        allDownloadedVideos.filter { it.videoId != videoId }.shuffled().take(4)
+                        allDownloadedVideos.filter { it.id != videoItem!!.id }.shuffled().take(4)
                     }
 
                 Column(
@@ -224,8 +228,8 @@ fun downloadedVideoPlayerScreen(
                                     file.delete()
                                 }
                             }
-                            dbHelper.removeVideoById(videoItem!!.videoId)
-                            Toast.makeText(context, "deleted video!", Toast.LENGTH_SHORT).show()
+                            dbHelper.removeVideoById(videoItem!!.id)
+                            Toast.makeText(context, "Đã xóa video!", Toast.LENGTH_SHORT).show()
                             navController.popBackStack()
                         }) {
                             Icon(Icons.Default.Delete, contentDescription = "Xóa", tint = Color.White)
@@ -251,7 +255,7 @@ fun downloadedVideoPlayerScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Next videos",
+                        text = "Video tiếp theo",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     )
@@ -266,7 +270,7 @@ fun downloadedVideoPlayerScreen(
                                     suggestedVideoItem(
                                         videoItem = suggestion,
                                         onClick = {
-                                            navController.navigate("downloaded_player/${suggestion.videoId}")
+                                            navController.navigate("downloaded_player/${suggestion.id}")
                                         },
                                         modifier = Modifier.weight(1f),
                                     )
