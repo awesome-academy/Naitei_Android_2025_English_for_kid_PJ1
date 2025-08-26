@@ -24,6 +24,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,12 +33,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.UserProfile
@@ -45,8 +44,6 @@ import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
-import com.example.englishappforkid.ui.theme.englishAppForKidTheme
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun profileScreen(
@@ -54,10 +51,14 @@ fun profileScreen(
     viewModel: ProfileViewModel = viewModel(),
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
-    val auth = FirebaseAuth.getInstance()
+    val isLoggedOut by viewModel.isLoggedOut.collectAsState()
 
     if (userProfile != null) {
-        profileContent(userProfile = userProfile!!, navController = navController, auth = auth)
+        profileContent(
+            userProfile = userProfile!!,
+            navController = navController,
+            onLogoutClick = { viewModel.logout() },
+        )
     } else {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -66,13 +67,22 @@ fun profileScreen(
             CircularProgressIndicator()
         }
     }
+
+    // Điều hướng khi đã logout
+    LaunchedEffect(isLoggedOut) {
+        if (isLoggedOut) {
+            navController.navigate(ScreenRoutes.WELCOME) {
+                popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
+            }
+        }
+    }
 }
 
 @Composable
 fun profileContent(
     userProfile: UserProfile,
     navController: NavHostController,
-    auth: FirebaseAuth,
+    onLogoutClick: () -> Unit,
 ) {
     Column(
         modifier =
@@ -82,6 +92,7 @@ fun profileContent(
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // Header
         Box(
             modifier =
                 Modifier
@@ -97,9 +108,7 @@ fun profileContent(
                     Modifier
                         .align(Alignment.CenterStart)
                         .size(28.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        },
+                        .clickable { navController.popBackStack() },
             )
             Text(
                 text = stringResource(R.string.profile),
@@ -111,15 +120,15 @@ fun profileContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // User info card
         nameSection(
             userProfile = userProfile,
-            onClick = {
-                navController.navigate(ScreenRoutes.PROFILE_DETAIL)
-            },
+            onClick = { navController.navigate(ScreenRoutes.PROFILE_DETAIL) },
         )
 
         Spacer(modifier = Modifier.height(36.dp))
 
+        // Menu items
         menuCard(
             title = stringResource(R.string.edit_profile),
             backgroundColor = boxBackground,
@@ -144,15 +153,11 @@ fun profileContent(
 
         Spacer(modifier = Modifier.height(36.dp))
 
+        // Logout button
         logout(
             title = stringResource(R.string.log_out),
             backgroundColor = Cowbell,
-            onClick = {
-                auth.signOut()
-                navController.navigate(ScreenRoutes.WELCOME) {
-                    popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
-                }
-            },
+            onClick = onLogoutClick,
         )
     }
 }
@@ -186,7 +191,6 @@ fun nameSection(
                                 .clip(RoundedCornerShape(24.dp)),
                     )
                 } else {
-                    // Hiển thị ảnh trắng nếu không có ảnh đại diện
                     Box(
                         modifier =
                             Modifier
@@ -197,8 +201,16 @@ fun nameSection(
                 Spacer(modifier = Modifier.width(24.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = userProfile.fullname, fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                    Text(text = stringResource(R.string.view_my_profile), color = Color.Blue, fontSize = 18.sp)
+                    Text(
+                        text = userProfile.fullname,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                    )
+                    Text(
+                        text = stringResource(R.string.view_my_profile),
+                        color = Color.Blue,
+                        fontSize = 18.sp,
+                    )
                 }
 
                 Icon(
@@ -292,21 +304,5 @@ fun logout(
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun previewProfileScreen() {
-    englishAppForKidTheme {
-        val navController = rememberNavController()
-        val fakeUser =
-            UserProfile(
-                uid = "fake_uid",
-                fullname = "Nguyen Van A",
-                email = "test@example.com",
-                avatarUrl = "",
-            )
-        profileContent(userProfile = fakeUser, navController = navController, auth = FirebaseAuth.getInstance())
     }
 }
