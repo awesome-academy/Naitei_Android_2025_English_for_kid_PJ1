@@ -93,19 +93,20 @@ fun editProfileScreen(
                         Text(
                             text = stringResource(R.string.edit_profile),
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     },
                     navigationIcon = {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back),
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .clickable { navController.popBackStack() },
-                            tint = Pink80
+                            modifier =
+                                Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .clickable { navController.popBackStack() },
+                            tint = Pink80,
                         )
-                    }
+                    },
                 )
             },
         ) { innerPadding ->

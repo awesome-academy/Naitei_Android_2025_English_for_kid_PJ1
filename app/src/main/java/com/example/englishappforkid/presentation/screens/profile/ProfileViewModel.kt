@@ -140,6 +140,7 @@ class ProfileViewModel(
             .set(profile)
             .await()
     }
+
     fun logout() {
         auth.signOut()
         _isLoggedOut.value = true
