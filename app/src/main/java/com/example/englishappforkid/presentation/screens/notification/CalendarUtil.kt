@@ -24,7 +24,7 @@ fun openGoogleCalendar(
     val rrule =
         when (frequency) {
             context.getString(R.string.once_everyday) -> "FREQ=DAILY"
-            context.getString(R.string.twice_a_day) -> "FREQ=DAILY;INTERVAL=1"
+            context.getString(R.string.twice_a_day) -> "FREQ=DAILY;INTERVAL=2"
             context.getString(R.string.weekly) -> "FREQ=WEEKLY"
             else -> null
         }

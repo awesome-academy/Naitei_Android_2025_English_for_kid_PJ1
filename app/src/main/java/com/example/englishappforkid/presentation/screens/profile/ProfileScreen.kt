@@ -24,6 +24,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,84 +47,92 @@ import com.example.englishappforkid.ui.theme.Cowbell
 import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.englishAppForKidTheme
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun profileScreen(
     navController: NavHostController,
-    viewModel: ProfileViewModel = viewModel(),
+    viewModel: ProfileViewModel = viewModel()
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
-    val auth = FirebaseAuth.getInstance()
+    val isLoggedOut by viewModel.isLoggedOut.collectAsState()
 
     if (userProfile != null) {
-        profileContent(userProfile = userProfile!!, navController = navController, auth = auth)
+        ProfileContent(
+            userProfile = userProfile!!,
+            navController = navController,
+            onLogoutClick = { viewModel.logout() }
+        )
     } else {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
+        }
+    }
+
+    // Điều hướng khi đã logout
+    LaunchedEffect(isLoggedOut) {
+        if (isLoggedOut) {
+            navController.navigate(ScreenRoutes.WELCOME) {
+                popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
+            }
         }
     }
 }
 
 @Composable
-fun profileContent(
+fun ProfileContent(
     userProfile: UserProfile,
     navController: NavHostController,
-    auth: FirebaseAuth,
+    onLogoutClick: () -> Unit
 ) {
     Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Header
         Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
                 tint = Pink80,
-                modifier =
-                    Modifier
-                        .align(Alignment.CenterStart)
-                        .size(28.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        },
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .size(28.dp)
+                    .clickable { navController.popBackStack() }
             )
             Text(
                 text = stringResource(R.string.profile),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
+                color = Color.Black
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        nameSection(
+        // User info card
+        NameSection(
             userProfile = userProfile,
-            onClick = {
-                navController.navigate(ScreenRoutes.PROFILE_DETAIL)
-            },
+            onClick = { navController.navigate(ScreenRoutes.PROFILE_DETAIL) }
         )
 
         Spacer(modifier = Modifier.height(36.dp))
 
+        // Menu items
         menuCard(
             title = stringResource(R.string.edit_profile),
             backgroundColor = boxBackground,
-            onClick = { navController.navigate(ScreenRoutes.EDIT_PROFILE) },
+            onClick = { navController.navigate(ScreenRoutes.EDIT_PROFILE) }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -131,7 +140,7 @@ fun profileContent(
         menuCard(
             title = stringResource(R.string.notification_setup),
             backgroundColor = boxBackground,
-            onClick = { navController.navigate(ScreenRoutes.NOTIFICATION_SETUP) },
+            onClick = { navController.navigate(ScreenRoutes.NOTIFICATION_SETUP) }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -139,72 +148,72 @@ fun profileContent(
         menuCard(
             title = stringResource(R.string.term_policy),
             backgroundColor = boxBackground,
-            onClick = { navController.navigate(ScreenRoutes.TERM_POLICY) },
+            onClick = { navController.navigate(ScreenRoutes.TERM_POLICY) }
         )
 
         Spacer(modifier = Modifier.height(36.dp))
 
+        // Logout button
         logout(
             title = stringResource(R.string.log_out),
             backgroundColor = Cowbell,
-            onClick = {
-                auth.signOut()
-                navController.navigate(ScreenRoutes.WELCOME) {
-                    popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
-                }
-            },
+            onClick = onLogoutClick
         )
     }
 }
 
 @Composable
-fun nameSection(
+fun NameSection(
     userProfile: UserProfile,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = boxBackground),
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clickable { onClick() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clickable { onClick() }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (userProfile.avatarUrl.isNotBlank()) {
                     AsyncImage(
                         model = userProfile.avatarUrl,
                         contentDescription = "Profile Picture",
-                        modifier =
-                            Modifier
-                                .size(80.dp)
-                                .clip(RoundedCornerShape(24.dp)),
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(24.dp))
                     )
                 } else {
-                    // Hiển thị ảnh trắng nếu không có ảnh đại diện
                     Box(
-                        modifier =
-                            Modifier
-                                .size(80.dp)
-                                .background(Color.LightGray, RoundedCornerShape(24.dp)),
+                        modifier = Modifier
+                            .size(80.dp)
+                            .background(Color.LightGray, RoundedCornerShape(24.dp))
                     )
                 }
                 Spacer(modifier = Modifier.width(24.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = userProfile.fullname, fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                    Text(text = stringResource(R.string.view_my_profile), color = Color.Blue, fontSize = 18.sp)
+                    Text(
+                        text = userProfile.fullname,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp
+                    )
+                    Text(
+                        text = stringResource(R.string.view_my_profile),
+                        color = Color.Blue,
+                        fontSize = 18.sp
+                    )
                 }
 
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Go",
-                    tint = Pink80,
+                    tint = Pink80
                 )
             }
 
@@ -213,7 +222,7 @@ fun nameSection(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row {
                     repeat(5) {
@@ -221,7 +230,7 @@ fun nameSection(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Star",
                             tint = Color.Yellow,
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 }
@@ -229,7 +238,7 @@ fun nameSection(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Rating Go",
-                    tint = Pink80,
+                    tint = Pink80
                 )
             }
         }
@@ -240,31 +249,29 @@ fun nameSection(
 fun menuCard(
     title: String,
     backgroundColor: Color,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .clickable { onClick() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .clickable { onClick() }
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = title, fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Go",
-                    tint = Pink80,
+                    tint = Pink80
                 )
             }
         }
@@ -275,38 +282,36 @@ fun menuCard(
 fun logout(
     title: String,
     backgroundColor: Color,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Box(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(color = backgroundColor, shape = RoundedCornerShape(12.dp))
-                .clickable { onClick() },
-        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .background(color = backgroundColor, shape = RoundedCornerShape(12.dp))
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = title,
             color = Color.Black,
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
+            fontSize = 18.sp
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun previewProfileScreen() {
+fun PreviewProfileScreen() {
     englishAppForKidTheme {
         val navController = rememberNavController()
-        val fakeUser =
-            UserProfile(
-                uid = "fake_uid",
-                fullname = "Nguyen Van A",
-                email = "test@example.com",
-                avatarUrl = "",
-            )
-        profileContent(userProfile = fakeUser, navController = navController, auth = FirebaseAuth.getInstance())
+        val fakeUser = UserProfile(
+            uid = "fake_uid",
+            fullname = "Nguyen Van A",
+            email = "test@example.com",
+            avatarUrl = ""
+        )
+        ProfileContent(userProfile = fakeUser, navController = navController, onLogoutClick = {})
     }
 }

@@ -31,6 +31,8 @@ class ProfileViewModel(
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
+    private val _isLoggedOut = MutableStateFlow(false)
+    val isLoggedOut = _isLoggedOut.asStateFlow()
 
     init {
         auth.addAuthStateListener { firebaseAuth ->
@@ -137,5 +139,9 @@ class ProfileViewModel(
             .document(uid)
             .set(profile)
             .await()
+    }
+    fun logout() {
+        auth.signOut()
+        _isLoggedOut.value = true
     }
 }
