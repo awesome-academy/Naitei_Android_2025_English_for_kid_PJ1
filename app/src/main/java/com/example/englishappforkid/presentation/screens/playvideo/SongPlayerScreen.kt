@@ -77,27 +77,31 @@ fun songScreen(
 
     var videoItem by remember { mutableStateOf<VideoItem?>(null) }
 
-    var isFullscreen by remember { mutableStateOf(false) }
+    var isFullscreen by remember { mutableStateOf(playerViewModel.isFullscreen) }
+
+    LaunchedEffect(isFullscreen) {
+        playerViewModel.isFullscreen = isFullscreen
+    }
 
     LaunchedEffect(baseVideoItem) {
         baseVideoItem?.let { baseItem ->
             val localPath = dbHelper.getLocalPathById(baseItem.id)
-            if (localPath != null && File(localPath).exists()) {
-                videoItem = baseItem.copy(localPath = localPath)
-            } else {
-                videoItem = baseItem
-            }
+            videoItem =
+                if (localPath != null && File(localPath).exists()) {
+                    baseItem.copy(localPath = localPath)
+                } else {
+                    baseItem
+                }
         }
     }
 
     if (videoItem == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Song not found!")
+            Text("Video not found!")
         }
         return
     }
 
-    playerViewModel.initializePlayer()
     val exoPlayer = playerViewModel.exoPlayer
 
     DisposableEffect(videoItem) {
