@@ -59,18 +59,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
+import com.example.englishappforkid.data.DataManager
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.ui.theme.ButtonYellow
 import com.example.englishappforkid.ui.theme.ForgotPasswordBlue
 import com.example.englishappforkid.ui.theme.Orange
 
 @Composable
-fun signUpScreen(
-    navController: NavHostController,
-    authViewModel: AuthViewModel = viewModel(),
-) {
-    val uiState by authViewModel.uiState.collectAsState()
+fun signUpScreen(navController: NavHostController) {
     val context = LocalContext.current
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(DataManager(context)))
+
+    val uiState by authViewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
     var passwordVisibility by remember { mutableStateOf(false) }
     var confirmPasswordVisibility by remember { mutableStateOf(false) }
