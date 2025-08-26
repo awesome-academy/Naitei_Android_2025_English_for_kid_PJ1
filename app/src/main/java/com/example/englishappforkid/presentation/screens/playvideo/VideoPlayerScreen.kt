@@ -77,16 +77,22 @@ fun videoScreen(
     var finalVideoItem by remember { mutableStateOf<VideoItem?>(null) }
 
     val dbHelper = remember { DBHelper(context) }
-    var isFullscreen by remember { mutableStateOf(false) }
+
+    var isFullscreen by remember { mutableStateOf(playerViewModel.isFullscreen) }
+
+    LaunchedEffect(isFullscreen) {
+        playerViewModel.isFullscreen = isFullscreen
+    }
 
     LaunchedEffect(baseVideoItem) {
         baseVideoItem?.let { baseItem ->
             val localPath = dbHelper.getLocalPathById(baseItem.id)
-            if (localPath != null && File(localPath).exists()) {
-                finalVideoItem = baseItem.copy(localPath = localPath)
-            } else {
-                finalVideoItem = baseItem
-            }
+            finalVideoItem =
+                if (localPath != null && File(localPath).exists()) {
+                    baseItem.copy(localPath = localPath)
+                } else {
+                    baseItem
+                }
         }
     }
 
@@ -97,15 +103,13 @@ fun videoScreen(
         return
     }
 
-    playerViewModel.initializePlayer()
     val exoPlayer = playerViewModel.exoPlayer
 
     DisposableEffect(finalVideoItem) {
         finalVideoItem?.let {
-            playerViewModel.playVideo(it)
+            playerViewModel.playVideo(it, resume = true)
         }
         onDispose {
-            exoPlayer.pause()
         }
     }
 

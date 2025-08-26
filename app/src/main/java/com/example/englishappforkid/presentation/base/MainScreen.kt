@@ -6,13 +6,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
@@ -36,16 +38,17 @@ import com.example.englishappforkid.presentation.screens.videolist.videoListScre
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun mainScreen() {
-    val navController = rememberNavController()
+fun mainScreen(navController: NavHostController) { // Sửa: Nhận NavController làm tham số
     val auth = FirebaseAuth.getInstance()
     val profileViewModel: ProfileViewModel = viewModel()
+    val alreadyNavigated = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        if (auth.currentUser != null) {
+    LaunchedEffect(auth.currentUser) {
+        if (!alreadyNavigated.value && auth.currentUser != null) {
             navController.navigate(ScreenRoutes.HOME) {
                 popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
             }
+            alreadyNavigated.value = true
         }
     }
 
@@ -68,7 +71,6 @@ fun mainScreen() {
             startDestination = ScreenRoutes.WELCOME,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable(ScreenRoutes.MAIN_SCREEN) { mainScreen() }
             composable(ScreenRoutes.WELCOME) { welcomeScreen(navController) }
             composable(ScreenRoutes.AUTH) { authScreen(navController) }
             composable(ScreenRoutes.SIGN_IN) { signInScreen(navController) }

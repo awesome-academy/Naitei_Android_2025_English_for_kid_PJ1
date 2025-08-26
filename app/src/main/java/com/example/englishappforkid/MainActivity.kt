@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Xin quyền notification (Android 13+)
         requestNotificationPermission()
 
         setContent {
@@ -47,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    mainScreen()
+                    mainScreen(navController = navController)
                 }
             }
         }

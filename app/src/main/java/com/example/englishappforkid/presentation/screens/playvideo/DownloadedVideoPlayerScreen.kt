@@ -91,7 +91,6 @@ fun downloadedVideoPlayerScreen(
         return
     }
 
-    playerViewModel.initializePlayer()
     val exoPlayer = playerViewModel.exoPlayer
 
     DisposableEffect(videoItem) {
@@ -145,7 +144,7 @@ fun downloadedVideoPlayerScreen(
                     onClick = { isFullscreen = false },
                     modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
                 ) {
-                    Icon(Icons.Default.FullscreenExit, "Exit full screen", tint = Color.White)
+                    Icon(Icons.Default.FullscreenExit, "Thoát toàn màn hình", tint = Color.White)
                 }
             }
         } else {
