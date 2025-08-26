@@ -1,14 +1,12 @@
 package com.example.englishappforkid.presentation.playvideo
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,10 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Download
@@ -64,6 +61,7 @@ import coil.compose.AsyncImage
 import com.example.englishappforkid.data.SongDataSource
 import com.example.englishappforkid.data.model.VideoItem
 import kotlinx.coroutines.delay
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,9 +72,23 @@ fun songScreen(
 ) {
     val context = LocalContext.current
     val dbHelper = remember { DBHelper(context) }
-    val videoItem = remember(videoId) { SongDataSource.songs.find { it.id == videoId } }
+
+    val baseVideoItem = remember(videoId) { SongDataSource.songs.find { it.id == videoId } }
+
+    var videoItem by remember { mutableStateOf<VideoItem?>(null) }
 
     var isFullscreen by remember { mutableStateOf(false) }
+
+    LaunchedEffect(baseVideoItem) {
+        baseVideoItem?.let { baseItem ->
+            val localPath = dbHelper.getLocalPathById(baseItem.id)
+            if (localPath != null && File(localPath).exists()) {
+                videoItem = baseItem.copy(localPath = localPath)
+            } else {
+                videoItem = baseItem
+            }
+        }
+    }
 
     if (videoItem == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -85,12 +97,15 @@ fun songScreen(
         return
     }
 
-    playerViewModel.initializePlayer(context)
+    playerViewModel.initializePlayer()
     val exoPlayer = playerViewModel.exoPlayer
 
-    DisposableEffect(videoId) {
-        playerViewModel.playVideo(videoItem.videoId)
-        onDispose { exoPlayer.stop() }
+    DisposableEffect(videoItem) {
+        videoItem?.let { playerViewModel.playVideo(it) }
+        onDispose {
+            exoPlayer.stop()
+            exoPlayer.clearMediaItems()
+        }
     }
 
     var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
@@ -147,7 +162,7 @@ fun songScreen(
                 topBar = {
                     TopAppBar(
                         windowInsets = WindowInsets(0),
-                        title = { Text(videoItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        title = { Text(videoItem!!.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
@@ -167,7 +182,7 @@ fun songScreen(
                         SongDataSource.songs
                             .filter { it.id != videoId }
                             .shuffled()
-                            .take(4) // Lấy 4 bài hát cho lưới 2x2
+                            .take(4)
                     }
 
                 Column(
@@ -175,7 +190,8 @@ fun songScreen(
                         Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
-                            .background(Color.White),
+                            .background(Color.White)
+                            .verticalScroll(rememberScrollState()),
                 ) {
                     AndroidView(
                         factory = { PlayerView(it).apply { useController = false } },
@@ -189,14 +205,13 @@ fun songScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Thanh điều khiển được thiết kế lại
                     Row(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFF49B0AB)) // Màu xanh lam
+                                .background(Color(0xFF49B0AB))
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -216,12 +231,7 @@ fun songScreen(
                                 ),
                         )
                         IconButton(onClick = {
-                            if (dbHelper.isVideoExists(videoItem.videoId)) {
-                                Toast.makeText(context, "The song already exists", Toast.LENGTH_SHORT).show()
-                            } else {
-                                dbHelper.addVideo(videoItem)
-                                Toast.makeText(context, "Song saved!", Toast.LENGTH_SHORT).show()
-                            }
+                            videoItem?.let { playerViewModel.startDownload(it) }
                         }) {
                             Icon(Icons.Default.Download, "Download", tint = Color.White)
                         }
@@ -240,7 +250,7 @@ fun songScreen(
                                 .background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp))
                                 .padding(12.dp),
                     ) {
-                        Text(text = videoItem.description, color = Color.Black)
+                        Text(text = videoItem!!.description, color = Color.Black)
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -251,19 +261,23 @@ fun songScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     )
 
-                    // Lưới các bài hát gợi ý
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    Column(
+                        modifier = Modifier.padding(horizontal = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(suggestedSongs, key = { it.id }) { suggestion ->
-                            suggestedSongItem(
-                                videoItem = suggestion,
-                                onClick = { navController.navigate("song_player/${suggestion.id}") },
-                            )
+                        suggestedSongs.chunked(2).forEach { rowItems ->
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                rowItems.forEach { suggestion ->
+                                    suggestedSongItem(
+                                        videoItem = suggestion,
+                                        onClick = { navController.navigate("song_player/${suggestion.id}") },
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                }
+                                if (rowItems.size < 2) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
                         }
                     }
                 }
@@ -279,7 +293,6 @@ fun suggestedSongItem(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        // Bỏ width cố định để item vừa với cột của lưới
         modifier = modifier.clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {
@@ -288,7 +301,10 @@ fun suggestedSongItem(
                 model = videoItem.thumbnailUrl,
                 contentDescription = videoItem.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().height(90.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(90.dp),
             )
             Text(
                 text = videoItem.title,

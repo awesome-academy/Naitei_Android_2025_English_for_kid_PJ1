@@ -60,7 +60,7 @@ class DownloadsViewModel(
     }
 
     fun deleteVideo(videoId: String) {
-        dbHelper.removeVideo(videoId)
+        dbHelper.removeVideoById(videoId)
         loadDownloadedVideos()
     }
 }

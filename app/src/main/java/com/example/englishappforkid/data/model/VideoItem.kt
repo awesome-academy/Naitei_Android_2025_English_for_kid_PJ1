@@ -6,4 +6,5 @@ data class VideoItem(
     val thumbnailUrl: String,
     val videoId: String,
     val description: String,
+    var localPath: String? = null,
 )
