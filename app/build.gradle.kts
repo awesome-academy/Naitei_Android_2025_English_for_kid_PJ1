@@ -76,7 +76,9 @@ dependencies {
     // Media3 (Video/Audio)
     implementation("androidx.media3:media3-exoplayer:1.8.0")
     implementation(libs.androidx.media3.ui)
-
+    implementation("androidx.work:work-runtime-ktx:2.10.3")
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

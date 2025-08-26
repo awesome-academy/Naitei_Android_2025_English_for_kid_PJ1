@@ -1,5 +1,7 @@
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.englishappforkid.data.DataManager
 import com.example.englishappforkid.data.model.UserProfile
 import com.example.englishappforkid.presentation.screens.auth.AuthState
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -8,9 +10,13 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val dataManager: DataManager,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(AuthState())
     val uiState = _uiState.asStateFlow()
 
@@ -58,7 +64,10 @@ class AuthViewModel : ViewModel() {
     }
 
     // ✅ Đăng nhập
-    fun signIn(onSuccess: () -> Unit) {
+    fun signIn(
+        rememberMe: Boolean,
+        onSuccess: () -> Unit,
+    ) { // Thêm `rememberMe: Boolean`
         _uiState.update { it.copy(isLoading = true, error = null) }
 
         if (_uiState.value.email.isBlank() || _uiState.value.pass.isBlank()) {
@@ -70,6 +79,9 @@ class AuthViewModel : ViewModel() {
             .signInWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    // Gọi hàm lưu/xóa credentials sau khi đăng nhập thành công
+                    saveOrClearCredentials(rememberMe)
+
                     // Không overwrite profile, chỉ fetch
                     fetchUserProfile(auth.currentUser?.uid)
                     onSuccess()
@@ -150,5 +162,51 @@ class AuthViewModel : ViewModel() {
             }.addOnFailureListener { e ->
                 _uiState.update { it.copy(error = "Failed to load user profile: ${e.message}") }
             }
+    }
+
+    // Hàm để gửi email reset mật khẩu
+    fun sendPasswordResetEmail(onSuccess: () -> Unit) {
+        _uiState.update { it.copy(isLoading = true, error = null) }
+
+        val email = _uiState.value.email
+        if (email.isBlank()) {
+            _uiState.update { it.copy(isLoading = false, error = "Please enter your email.") }
+            return
+        }
+
+        auth
+            .sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onSuccess()
+                } else {
+                    _uiState.update {
+                        it.copy(error = task.exception?.message ?: "Failed to send reset email.")
+                    }
+                }
+                _uiState.update { it.copy(isLoading = false) }
+            }
+    }
+
+    // Hàm để LƯU hoặc XÓA thông tin đăng nhập tùy vào checkbox
+    fun saveOrClearCredentials(shouldSave: Boolean) {
+        val email = _uiState.value.email
+        val pass = _uiState.value.pass
+        viewModelScope.launch {
+            if (shouldSave) {
+                dataManager.saveCredentials(email, pass)
+            } else {
+                dataManager.clearCredentials()
+            }
+        }
+    }
+
+    // Hàm để TẢI thông tin đã lưu khi mở màn hình
+    fun loadSavedCredentials() {
+        viewModelScope.launch {
+            val email = dataManager.userEmailFlow.first() ?: ""
+            val pass = dataManager.userPasswordFlow.first() ?: ""
+            _uiState.update { it.copy(email = email, pass = pass) }
+        }
     }
 }

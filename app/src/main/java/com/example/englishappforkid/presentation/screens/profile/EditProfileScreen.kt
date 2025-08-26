@@ -70,7 +70,6 @@ fun editProfileScreen(
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             selectedImageUri = uri
         }
-
     val noName = stringResource(R.string.no_name)
     val noAddress = stringResource(R.string.no_address)
     val noAge = stringResource(R.string.no_age)
@@ -169,7 +168,6 @@ fun editProfileScreen(
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             }
-
                             else -> {
                                 Text(stringResource(R.string.pick_image), color = Color.DarkGray)
                             }

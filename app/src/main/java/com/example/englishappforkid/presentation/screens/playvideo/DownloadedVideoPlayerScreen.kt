@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,10 +15,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -65,6 +63,7 @@ import com.example.englishappforkid.data.model.VideoItem
 import com.example.englishappforkid.presentation.playvideo.DBHelper
 import com.example.englishappforkid.presentation.playvideo.VideoPlayerViewModel
 import kotlinx.coroutines.delay
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,27 +75,31 @@ fun downloadedVideoPlayerScreen(
     val context = LocalContext.current
     val dbHelper = remember { DBHelper(context) }
 
-    val videoItem = remember(videoId) { dbHelper.getVideoById(videoId) }
+    val videoItem by remember(videoId) { mutableStateOf(dbHelper.getVideoById(videoId)) }
     val allDownloadedVideos = remember { dbHelper.getAllVideos() }
 
-    var isFullscreen by remember { mutableStateOf(false) }
+    var isFullscreen by remember { mutableStateOf(playerViewModel.isFullscreen) }
+    LaunchedEffect(isFullscreen) {
+        playerViewModel.isFullscreen = isFullscreen
+    }
 
     if (videoItem == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("Không tìm thấy video đã tải.")
         }
         LaunchedEffect(Unit) {
+            delay(1500)
             navController.popBackStack()
         }
         return
     }
 
-    playerViewModel.initializePlayer(context)
     val exoPlayer = playerViewModel.exoPlayer
 
-    DisposableEffect(videoId) {
-        playerViewModel.playVideo(videoItem.videoId)
-        onDispose { exoPlayer.pause() }
+    DisposableEffect(videoItem) {
+        videoItem?.let { playerViewModel.playVideo(it, resume = true) }
+        onDispose {
+        }
     }
 
     var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
@@ -153,7 +156,7 @@ fun downloadedVideoPlayerScreen(
                 topBar = {
                     TopAppBar(
                         windowInsets = WindowInsets(0),
-                        title = { Text(videoItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        title = { Text(videoItem!!.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Quay lại")
@@ -170,7 +173,7 @@ fun downloadedVideoPlayerScreen(
             ) { innerPadding ->
                 val suggestedVideos =
                     remember(videoId) {
-                        allDownloadedVideos.filter { it.id != videoId }.shuffled().take(4)
+                        allDownloadedVideos.filter { it.id != videoItem!!.id }.shuffled().take(4)
                     }
 
                 Column(
@@ -178,7 +181,8 @@ fun downloadedVideoPlayerScreen(
                         Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
-                            .background(Color.White),
+                            .background(Color.White)
+                            .verticalScroll(rememberScrollState()),
                 ) {
                     AndroidView(
                         factory = { PlayerView(it).apply { useController = false } },
@@ -192,7 +196,6 @@ fun downloadedVideoPlayerScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Thanh điều khiển được thiết kế lại
                     Row(
                         modifier =
                             Modifier
@@ -218,9 +221,14 @@ fun downloadedVideoPlayerScreen(
                                     inactiveTrackColor = Color.LightGray.copy(alpha = 0.5f),
                                 ),
                         )
-                        // Nút Xóa thay cho nút Tải xuống
                         IconButton(onClick = {
-                            dbHelper.removeVideo(videoItem.id)
+                            videoItem?.localPath?.let {
+                                val file = File(it)
+                                if (file.exists()) {
+                                    file.delete()
+                                }
+                            }
+                            dbHelper.removeVideoById(videoItem!!.id)
                             Toast.makeText(context, "Đã xóa video!", Toast.LENGTH_SHORT).show()
                             navController.popBackStack()
                         }) {
@@ -241,30 +249,36 @@ fun downloadedVideoPlayerScreen(
                                 .background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp))
                                 .padding(12.dp),
                     ) {
-                        Text(text = videoItem.description, color = Color.Black)
+                        Text(text = videoItem!!.description, color = Color.Black)
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Next videos",
+                        text = "Video tiếp theo",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     )
 
-                    // Lưới video gợi ý
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    Column(
+                        modifier = Modifier.padding(horizontal = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(suggestedVideos, key = { it.id }) { suggestion ->
-                            suggestedVideoItem(
-                                videoItem = suggestion,
-                                onClick = { navController.navigate("downloaded_player/${suggestion.id}") },
-                            )
+                        suggestedVideos.chunked(2).forEach { rowItems ->
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                rowItems.forEach { suggestion ->
+                                    suggestedVideoItem(
+                                        videoItem = suggestion,
+                                        onClick = {
+                                            navController.navigate("downloaded_player/${suggestion.id}")
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                }
+                                if (rowItems.size < 2) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
                         }
                     }
                 }
@@ -273,7 +287,6 @@ fun downloadedVideoPlayerScreen(
     }
 }
 
-// Giữ lại Composable này để hiển thị item trong lưới
 @Composable
 fun suggestedVideoItem(
     videoItem: VideoItem,

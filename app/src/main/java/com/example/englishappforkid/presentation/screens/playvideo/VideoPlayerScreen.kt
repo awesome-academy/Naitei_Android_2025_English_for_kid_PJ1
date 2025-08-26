@@ -1,7 +1,6 @@
 package com.example.englishappforkid.presentation.playvideo
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -64,6 +63,7 @@ import coil.compose.AsyncImage
 import com.example.englishappforkid.data.VideoDataSource
 import com.example.englishappforkid.data.model.VideoItem
 import kotlinx.coroutines.delay
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,29 +73,46 @@ fun videoScreen(
     playerViewModel: VideoPlayerViewModel = viewModel(),
 ) {
     val context = LocalContext.current
-    val videoItem = remember(videoId) { VideoDataSource.getVideoById(videoId) }
+    val baseVideoItem = remember(videoId) { VideoDataSource.getVideoById(videoId) }
+    var finalVideoItem by remember { mutableStateOf<VideoItem?>(null) }
+
     val dbHelper = remember { DBHelper(context) }
 
-    var isFullscreen by remember { mutableStateOf(false) }
+    var isFullscreen by remember { mutableStateOf(playerViewModel.isFullscreen) }
 
-    if (videoItem == null) {
-        // Có thể hiển thị một màn hình lỗi ở đây
-        Text("Video not found!")
-        return
+    LaunchedEffect(isFullscreen) {
+        playerViewModel.isFullscreen = isFullscreen
     }
 
-    playerViewModel.initializePlayer(context)
-    val exoPlayer = playerViewModel.exoPlayer
-
-    DisposableEffect(videoId) {
-        playerViewModel.playVideo(videoItem.videoId)
-        onDispose {
-            // Tạm dừng khi màn hình bị hủy
-            exoPlayer.pause()
+    LaunchedEffect(baseVideoItem) {
+        baseVideoItem?.let { baseItem ->
+            val localPath = dbHelper.getLocalPathById(baseItem.id)
+            finalVideoItem =
+                if (localPath != null && File(localPath).exists()) {
+                    baseItem.copy(localPath = localPath)
+                } else {
+                    baseItem
+                }
         }
     }
 
-    // Các state và effect để theo dõi trạng thái của player
+    if (finalVideoItem == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Video not found!")
+        }
+        return
+    }
+
+    val exoPlayer = playerViewModel.exoPlayer
+
+    DisposableEffect(finalVideoItem) {
+        finalVideoItem?.let {
+            playerViewModel.playVideo(it, resume = true)
+        }
+        onDispose {
+        }
+    }
+
     var isPlaying by remember { mutableStateOf(exoPlayer.isPlaying) }
     var currentPosition by remember { mutableStateOf(0L) }
     var duration by remember { mutableStateOf(0L) }
@@ -128,15 +145,12 @@ fun videoScreen(
         }
     }
 
-    // Xử lý nút back của hệ thống khi ở chế độ toàn màn hình
     BackHandler(enabled = isFullscreen) {
         isFullscreen = false
     }
 
-    // Giao diện chính
     Box(modifier = Modifier.fillMaxSize()) {
         if (isFullscreen) {
-            // CHẾ ĐỘ TOÀN MÀN HÌNH
             Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
                 AndroidView(
                     factory = { PlayerView(it).apply { useController = false } },
@@ -151,14 +165,13 @@ fun videoScreen(
                 }
             }
         } else {
-            // CHẾ ĐỘ BÌNH THƯỜNG
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        windowInsets = WindowInsets(0), // Bỏ khoảng trắng thừa ở status bar
+                        windowInsets = WindowInsets(0),
                         title = {
                             Text(
-                                text = videoItem.title,
+                                text = finalVideoItem!!.title,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -177,7 +190,6 @@ fun videoScreen(
                     )
                 },
             ) { innerPadding ->
-                // Lấy danh sách video gợi ý
                 val suggestedVideos =
                     remember(videoId) {
                         VideoDataSource.videoStories
@@ -186,15 +198,13 @@ fun videoScreen(
                             .take(4)
                     }
 
-                // Sử dụng LazyColumn để toàn bộ màn hình có thể cuộn nếu nội dung quá dài
                 Column(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(innerPadding) // Padding bắt buộc của Scaffold
+                            .padding(innerPadding)
                             .background(Color.White),
                 ) {
-                    // Video player
                     AndroidView(
                         factory = { PlayerView(it).apply { useController = false } },
                         modifier =
@@ -207,7 +217,6 @@ fun videoScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Khung điều khiển
                     Row(
                         modifier =
                             Modifier
@@ -234,12 +243,7 @@ fun videoScreen(
                                 ),
                         )
                         IconButton(onClick = {
-                            if (dbHelper.isVideoExists(videoItem.videoId)) {
-                                Toast.makeText(context, "The story already exists", Toast.LENGTH_SHORT).show()
-                            } else {
-                                dbHelper.addVideo(videoItem)
-                                Toast.makeText(context, "Story saved!", Toast.LENGTH_SHORT).show()
-                            }
+                            finalVideoItem?.let { playerViewModel.startDownload(it) }
                         }) {
                             Icon(Icons.Default.Download, "Download", tint = Color.White)
                         }
@@ -250,7 +254,6 @@ fun videoScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Mô tả video
                     Box(
                         modifier =
                             Modifier
@@ -259,22 +262,20 @@ fun videoScreen(
                                 .background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp))
                                 .padding(12.dp),
                     ) {
-                        Text(text = videoItem.description, color = Color.Black)
+                        Text(text = finalVideoItem!!.description, color = Color.Black)
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Tiêu đề video gợi ý
                     Text(
                         text = "Next Videos",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     )
 
-                    // Lưới video gợi ý
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(300.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -299,7 +300,6 @@ fun suggestedVideoItem(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        // Bỏ width và padding cố định để item vừa với lưới
         modifier = modifier.clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(2.dp),
     ) {

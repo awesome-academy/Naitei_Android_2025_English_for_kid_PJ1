@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
+import com.example.englishappforkid.data.DataManager
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.ui.theme.ButtonYellow
 import com.example.englishappforkid.ui.theme.ForgotPasswordBlue
@@ -73,14 +74,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 
 @Composable
-fun signInScreen(
-    navController: NavHostController,
-    authViewModel: AuthViewModel = viewModel(),
-) {
-    val uiState by authViewModel.uiState.collectAsState()
+fun signInScreen(navController: NavHostController) {
     val context = LocalContext.current
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(DataManager(context)))
+
+    val uiState by authViewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
     var passwordVisibility by remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = Unit) {
+        authViewModel.loadSavedCredentials()
+    }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
@@ -203,7 +208,7 @@ fun signInScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions =
                     KeyboardActions {
-                        authViewModel.signIn {
+                        authViewModel.signIn(rememberMe = isChecked) {
                             navController.navigate(ScreenRoutes.HOME) {
                                 popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
                             }
@@ -219,7 +224,6 @@ fun signInScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                var isChecked by remember { mutableStateOf(false) }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = isChecked,
@@ -239,7 +243,7 @@ fun signInScreen(
             // Sign In button
             Button(
                 onClick = {
-                    authViewModel.signIn {
+                    authViewModel.signIn(rememberMe = isChecked) {
                         navController.navigate(ScreenRoutes.HOME) {
                             popUpTo(ScreenRoutes.WELCOME) { inclusive = true }
                         }
