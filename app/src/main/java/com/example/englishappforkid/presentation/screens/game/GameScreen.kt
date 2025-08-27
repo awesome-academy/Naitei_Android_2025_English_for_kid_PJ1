@@ -84,13 +84,13 @@ fun gameScreen(
                     .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            GameProgress(currentWordCount = gameUiState.currentWordCount, totalWords = MAX_NO_OF_WORDS)
+            gameProgress(currentWordCount = gameUiState.currentWordCount, totalWords = MAX_NO_OF_WORDS)
             Spacer(modifier = Modifier.height(16.dp))
 
             scrambledLettersDisplay(scrambledWord = gameUiState.scrambledWord)
             Spacer(modifier = Modifier.height(16.dp))
 
-            WordDisplay(word = userGuess, pronunciation = "/$userGuess/")
+            wordDisplay(word = userGuess, pronunciation = "/$userGuess/")
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -105,7 +105,7 @@ fun gameScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CharacterGrid(
+            characterGrid(
                 characters = gameUiState.availableCharacters.map { it.toString() },
                 onCharClicked = { char -> gameViewModel.updateUserGuess(userGuess + char) },
             )
@@ -113,15 +113,25 @@ fun gameScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             if (userGuess.isNotEmpty()) {
-                val feedbackText = if (gameUiState.isGuessedWordWrong) stringResource(R.string.wrong) else stringResource(R.string.great)
-                val feedbackColor = if (gameUiState.isGuessedWordWrong) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                val feedbackText =
+                    if (gameUiState.isGuessedWordWrong) {
+                        stringResource(R.string.wrong)
+                    } else {
+                        stringResource(R.string.great)
+                    }
+                val feedbackColor =
+                    if (gameUiState.isGuessedWordWrong) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
                 Text(feedbackText, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = feedbackColor)
             }
         }
     }
 
     if (gameUiState.isGameOver) {
-        FinalScoreDialog(
+        finalScoreDialog(
             score = gameUiState.score,
             onPlayAgain = { gameViewModel.resetGame() },
             onExit = onExit,
@@ -169,7 +179,7 @@ fun scrambledLettersDisplay(scrambledWord: String) {
 }
 
 @Composable
-fun GameProgress(
+fun gameProgress(
     currentWordCount: Int,
     totalWords: Int,
 ) {
@@ -194,7 +204,7 @@ fun GameProgress(
 }
 
 @Composable
-fun WordDisplay(
+fun wordDisplay(
     word: String,
     pronunciation: String,
 ) {
@@ -215,7 +225,7 @@ fun WordDisplay(
 }
 
 @Composable
-fun CharacterGrid(
+fun characterGrid(
     characters: List<String>,
     onCharClicked: (String) -> Unit,
 ) {
@@ -244,7 +254,7 @@ fun CharacterGrid(
 }
 
 @Composable
-private fun FinalScoreDialog(
+private fun finalScoreDialog(
     score: Int,
     onPlayAgain: () -> Unit,
     onExit: () -> Unit,
