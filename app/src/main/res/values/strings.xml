@@ -60,4 +60,16 @@
     <string name="fullname">Full name</string>
     <string name="save_changes">Save Changes</string>
     <string name="password_mismatch">Password Mismatch</string>
+    <string name="play_again">Play Again</string>
+    <string name="congratulations">Congratulations</string>
+    <string name="you_scored">You Scored</string>
+    <string name="exit">Exit</string>
+    <string name="choose_the_topic">Choose The Topic</string>
+    <string name="check">Check</string>
+    <string name="skip">Skip</string>
+    <string name="wrong">Wrong!</string>
+    <string name="great">Great!</string>
+    <string name="easy">Easy</string>
+    <string name="delete">Delete</string>
+
 </resources>

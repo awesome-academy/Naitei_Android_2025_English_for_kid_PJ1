@@ -24,6 +24,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,10 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.LeaderboardEntry
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
-import com.example.englishappforkid.presentation.screens.prehome.LeaderboardViewModel
+import com.example.englishappforkid.ui.prehome.LeaderboardViewModel
 import com.example.englishappforkid.ui.theme.boxBackground
 import com.example.englishappforkid.ui.theme.colorButtonSelected
 import com.example.englishappforkid.ui.theme.icRefresh
@@ -54,10 +56,15 @@ fun preHomeScreen(
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
 
+    LaunchedEffect(Unit) {
+        viewModel.loadLeaderboard()
+    }
+
     preHomeScreenContent(
         navController = navController,
         entries = entries,
         email = user?.email,
+        onRefresh = { viewModel.loadLeaderboard() },
     )
 }
 
@@ -66,17 +73,18 @@ fun preHomeScreenContent(
     navController: NavHostController,
     entries: List<LeaderboardEntry>,
     email: String?,
+    onRefresh: () -> Unit,
 ) {
     Column(
         modifier =
             Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(24.dp),
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        headerSection(email, navController)
-        Spacer(modifier = Modifier.height(36.dp))
+        headerSection(email, navController, onRefresh)
+        Spacer(modifier = Modifier.height(24.dp))
 
         menuCard(
             title = stringResource(R.string.short_story),
@@ -88,9 +96,7 @@ fun preHomeScreenContent(
                     modifier = Modifier.size(36.dp),
                 )
             },
-            onClick = {
-                navController.navigate(ScreenRoutes.VIDEO_LIST)
-            },
+            onClick = { navController.navigate(ScreenRoutes.VIDEO_LIST) },
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -105,12 +111,10 @@ fun preHomeScreenContent(
                     modifier = Modifier.size(36.dp),
                 )
             },
-            onClick = {
-                navController.navigate(ScreenRoutes.SONG_LIST)
-            },
+            onClick = { navController.navigate(ScreenRoutes.SONG_LIST) },
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         leaderboardSection(entries)
     }
 }
@@ -119,6 +123,7 @@ fun preHomeScreenContent(
 fun headerSection(
     email: String?,
     navController: NavHostController,
+    onRefresh: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -143,6 +148,10 @@ fun headerSection(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = "Refresh",
                 tint = icRefresh,
+                modifier =
+                    Modifier.clickable {
+                        onRefresh() // ✅ gọi lại loadLeaderboard
+                    },
             )
         }
 
@@ -157,7 +166,7 @@ fun headerSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(stringResource(R.string.hello))
+            Text(stringResource(R.string.hello), color = Color.White)
             Text(text = email ?: stringResource(R.string.loading), color = Color.White)
         }
     }
@@ -195,6 +204,9 @@ fun menuCard(
 
 @Composable
 fun leaderboardSection(entries: List<LeaderboardEntry>) {
+    val top3 = entries.take(3)
+    val you = entries.find { it.isYou }
+
     Column(
         modifier =
             Modifier
@@ -211,66 +223,109 @@ fun leaderboardSection(entries: List<LeaderboardEntry>) {
                 contentDescription = "Crown",
                 modifier =
                     Modifier
-                        .size(24.dp)
+                        .size(28.dp)
                         .align(Alignment.TopCenter),
             )
-            Spacer(modifier = Modifier.height(8.dp))
+
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("3rd", fontWeight = FontWeight.Bold)
-                    Image(
-                        painter = painterResource(id = R.drawable.person_1),
-                        contentDescription = "3rd",
-                        modifier =
-                            Modifier
-                                .size(90.dp)
-                                .padding(top = 24.dp),
-                    )
+                // 3rd
+                top3.getOrNull(2)?.let { player ->
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("3rd", fontWeight = FontWeight.Bold)
+                        Image(
+                            painter =
+                                if (!player.avatar.isNullOrEmpty()) {
+                                    rememberAsyncImagePainter(model = player.avatar)
+                                } else {
+                                    painterResource(id = R.drawable.person_1)
+                                },
+                            contentDescription = player.name,
+                            modifier =
+                                Modifier
+                                    .size(60.dp)
+                                    .padding(top = 24.dp),
+                        )
+                        Text(player.name, fontSize = 13.sp)
+                    }
                 }
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth(0.3f),
-                ) {
-                    Text("", fontWeight = FontWeight.Bold)
-                    Image(
-                        painter = painterResource(id = R.drawable.person_1),
-                        contentDescription = "1st",
-                        modifier =
-                            Modifier
-                                .size(90.dp)
-                                .padding(top = 8.dp),
-                    )
+                top3.getOrNull(0)?.let { player ->
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("1st", fontWeight = FontWeight.Bold)
+                        Image(
+                            painter =
+                                if (!player.avatar.isNullOrEmpty()) {
+                                    rememberAsyncImagePainter(model = player.avatar)
+                                } else {
+                                    painterResource(id = R.drawable.person_1)
+                                },
+                            contentDescription = player.name,
+                            modifier =
+                                Modifier
+                                    .size(80.dp)
+                                    .padding(top = 8.dp),
+                        )
+                        Text(player.name, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    }
                 }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("2nd", fontWeight = FontWeight.Bold)
-                    Image(
-                        painter = painterResource(id = R.drawable.person_1),
-                        contentDescription = "2nd",
-                        modifier =
-                            Modifier
-                                .size(90.dp)
-                                .padding(top = 20.dp),
-                    )
+                // 2nd
+                top3.getOrNull(1)?.let { player ->
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("2nd", fontWeight = FontWeight.Bold)
+                        Image(
+                            painter =
+                                if (!player.avatar.isNullOrEmpty()) {
+                                    rememberAsyncImagePainter(model = player.avatar)
+                                } else {
+                                    painterResource(id = R.drawable.person_1)
+                                },
+                            contentDescription = player.name,
+                            modifier =
+                                Modifier
+                                    .size(70.dp)
+                                    .padding(top = 8.dp),
+                        )
+                        Text(player.name, fontSize = 13.sp)
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(36.dp))
+        if (entries.isNotEmpty()) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+            ) {
+                entries.getOrNull(0)?.let {
+                    Text("Top 1: ${it.name}-${it.score} pts", fontWeight = FontWeight.Medium)
+                }
+                HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+                Spacer(modifier = Modifier.height(8.dp))
+                entries.getOrNull(1)?.let {
+                    Text("Top 2: ${it.name}-${it.score} pts", fontWeight = FontWeight.Medium)
+                }
 
-        entries.forEach { entry ->
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                "${entry.rank}  ${entry.name}${if (entry.isYou) " (You)" else ""}",
-                fontWeight = if (entry.isYou) FontWeight.Bold else FontWeight.Normal,
-            )
-            HorizontalDivider(thickness = 1.dp, color = Color.Black)
+                HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+                you?.let {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            "Your Rank: ${it.rank}.${it.name}-${it.score} pts",
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }

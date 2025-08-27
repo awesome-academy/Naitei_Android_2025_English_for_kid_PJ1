@@ -1,4 +1,4 @@
-package com.example.englishappforkid.presentation.screens.home
+package com.example.englishappforkid.presentation.screens.gametopic
 
 import com.example.englishappforkid.data.model.Topic
 

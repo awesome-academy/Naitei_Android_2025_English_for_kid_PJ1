@@ -49,6 +49,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.englishappforkid.R
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
+import com.example.englishappforkid.ui.theme.boxBackground
 
 @Composable
 fun profileDetailScreen(
@@ -62,7 +63,7 @@ fun profileDetailScreen(
             Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colorScheme.background)
+                .background(boxBackground)
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

@@ -1,5 +1,6 @@
-package com.example.englishappforkid.presentation.screens.home
+package com.example.englishappforkid.presentation.screens.gametopic
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,25 +13,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.FamilyRestroom
-import androidx.compose.material.icons.filled.Kitchen
-import androidx.compose.material.icons.filled.Numbers
-import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material.icons.filled.Spa
-import androidx.compose.material.icons.filled.SportsBasketball
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Work
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.englishappforkid.R
 import com.example.englishappforkid.data.model.Topic
 
 @Composable
@@ -49,9 +44,9 @@ fun topicListItem(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = getIconForTopic(topic.name),
-                contentDescription = null,
+            Image(
+                painter = getImageForTopic(topic.name),
+                contentDescription = topic.name,
                 modifier = Modifier.size(40.dp),
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -77,10 +72,10 @@ fun topicGridItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Icon(
-                imageVector = getIconForTopic(topic.name),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp),
+            Image(
+                painter = getImageForTopic(topic.name),
+                contentDescription = topic.name,
+                modifier = Modifier.size(64.dp),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = topic.name, style = MaterialTheme.typography.titleSmall)
@@ -89,15 +84,38 @@ fun topicGridItem(
 }
 
 @Composable
-fun getIconForTopic(topicName: String): ImageVector =
+fun getImageForTopic(topicName: String): Painter =
     when (topicName) {
-        "Animals" -> Icons.Default.Pets
-        "Colors" -> Icons.Default.ColorLens
-        "Numbers" -> Icons.Default.Numbers
-        "Fruits" -> Icons.Default.Spa
-        "Family" -> Icons.Default.FamilyRestroom
-        "Jobs" -> Icons.Default.Work
-        "Sports" -> Icons.Default.SportsBasketball
-        "Kitchen" -> Icons.Default.Kitchen
-        else -> Icons.Default.Star
+        "Animals" -> painterResource(id = R.drawable.animals)
+        "Fruits" -> painterResource(id = R.drawable.fruits)
+        "Colors" -> painterResource(id = R.drawable.colors)
+        "School" -> painterResource(id = R.drawable.school)
+        "Vehicles" -> painterResource(id = R.drawable.vehicles)
+        "Sport" -> painterResource(id = R.drawable.sport)
+        "Family" -> painterResource(id = R.drawable.family)
+        "Number" -> painterResource(id = R.drawable.number)
+        "Toys" -> painterResource(id = R.drawable.toys)
+        "Nature" -> painterResource(id = R.drawable.nature)
+        else -> painterResource(id = R.drawable.back_ground) // ảnh mặc định
     }
+
+/**
+ * Hiển thị danh sách theo dạng lưới 2 cột
+ */
+@Composable
+fun topicGridScreen(
+    topics: List<Topic>,
+    onTopicClick: (Topic) -> Unit,
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding =
+            androidx.compose.foundation.layout
+                .PaddingValues(8.dp),
+    ) {
+        items(topics) { topic ->
+            topicGridItem(topic = topic, onClick = { onTopicClick(topic) })
+        }
+    }
+}

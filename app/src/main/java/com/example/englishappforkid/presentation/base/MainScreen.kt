@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.englishappforkid.data.model.TopicModel
 import com.example.englishappforkid.presentation.base.components.bottomNavBar
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.presentation.playvideo.songScreen
@@ -27,6 +28,9 @@ import com.example.englishappforkid.presentation.screens.auth.signUpScreen
 import com.example.englishappforkid.presentation.screens.auth.welcomeScreen
 import com.example.englishappforkid.presentation.screens.downloads.downloadedVideoPlayerScreen
 import com.example.englishappforkid.presentation.screens.downloads.downloadsScreen
+import com.example.englishappforkid.presentation.screens.game.GameViewModel
+import com.example.englishappforkid.presentation.screens.game.gameScreen
+import com.example.englishappforkid.presentation.screens.game.topicGame
 import com.example.englishappforkid.presentation.screens.notification.notiSetup
 import com.example.englishappforkid.presentation.screens.prehome.preHomeScreen
 import com.example.englishappforkid.presentation.screens.profile.ProfileViewModel
@@ -38,7 +42,7 @@ import com.example.englishappforkid.presentation.screens.videolist.videoListScre
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun mainScreen(navController: NavHostController) { // Sửa: Nhận NavController làm tham số
+fun mainScreen(navController: NavHostController) {
     val auth = FirebaseAuth.getInstance()
     val profileViewModel: ProfileViewModel = viewModel()
     val alreadyNavigated = rememberSaveable { mutableStateOf(false) }
@@ -55,7 +59,7 @@ fun mainScreen(navController: NavHostController) { // Sửa: Nhận NavControlle
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val showBottomBar =
         when (currentBackStackEntry?.destination?.route) {
-            ScreenRoutes.HOME, ScreenRoutes.SONG_LIST, ScreenRoutes.DOWNLOAD, ScreenRoutes.PROFILE -> true
+            ScreenRoutes.HOME, ScreenRoutes.SONG_LIST, ScreenRoutes.DOWNLOAD, ScreenRoutes.GAME, ScreenRoutes.PROFILE -> true
             else -> false
         }
 
@@ -79,22 +83,45 @@ fun mainScreen(navController: NavHostController) { // Sửa: Nhận NavControlle
             composable(ScreenRoutes.HOME) { preHomeScreen(navController) }
             composable(ScreenRoutes.DOWNLOAD) { downloadsScreen(navController) }
             composable(ScreenRoutes.PROFILE) { profileScreen(navController) }
+            composable(ScreenRoutes.GAME) {
+                val topics =
+                    listOf(
+                        TopicModel("Animals"),
+                        TopicModel("Fruits"),
+                        TopicModel("Colors"),
+                        TopicModel("School"),
+                        TopicModel("Vehicles"),
+                        TopicModel("Sport"),
+                        TopicModel("Family"),
+                        TopicModel("Number"),
+                        TopicModel("Toys"),
+                        TopicModel("Nature"),
+                    )
+                topicGame(topics = topics, navController = navController)
+            }
 
+            composable("game/{topicName}") { backStackEntry ->
+                val topicName = backStackEntry.arguments?.getString("topicName") ?: "Animals"
+                val gameViewModel: GameViewModel = viewModel()
+                gameViewModel.setTheme(topicName)
+                gameScreen(
+                    navController = navController,
+                    gameViewModel = gameViewModel,
+                    onExit = { navController.popBackStack() },
+                )
+            }
             composable(ScreenRoutes.EDIT_PROFILE) {
                 editProfileScreen(navController = navController, viewModel = profileViewModel)
             }
-
             composable(ScreenRoutes.NOTIFICATION_SETUP) { notiSetup(navController) }
             composable(ScreenRoutes.TERM_POLICY) { /* Policy Screen */ }
             composable(ScreenRoutes.LOGIN) { /* Login Screen */ }
             composable(ScreenRoutes.VIDEO_LIST) { videoListScreen(navController) }
             composable(ScreenRoutes.SONG_LIST) { songListScreen(navController) }
-
             composable(ScreenRoutes.PROFILE_DETAIL) {
                 val userProfile by profileViewModel.userProfile.collectAsState()
                 profileDetailScreen(navController, profileViewModel)
             }
-
             composable(
                 route = "video_player/{videoId}",
                 arguments = listOf(navArgument("videoId") { type = NavType.StringType }),
@@ -103,7 +130,6 @@ fun mainScreen(navController: NavHostController) { // Sửa: Nhận NavControlle
                     videoScreen(videoId = videoId, navController = navController)
                 }
             }
-
             composable(
                 route = "song_player/{songId}",
                 arguments = listOf(navArgument("songId") { type = NavType.StringType }),
@@ -112,7 +138,6 @@ fun mainScreen(navController: NavHostController) { // Sửa: Nhận NavControlle
                     songScreen(videoId = songId, navController = navController)
                 }
             }
-
             composable(
                 route = "downloaded_player/{downloadId}",
                 arguments = listOf(navArgument("downloadId") { type = NavType.StringType }),

@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -285,9 +286,9 @@ fun frequencyDropdown(
                 )
                 Text(
                     text = selectedOption,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Pink80,
+                    color = Blue,
                     modifier =
                         Modifier
                             .weight(1f)

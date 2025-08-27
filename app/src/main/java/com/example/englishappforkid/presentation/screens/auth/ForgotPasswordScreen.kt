@@ -1,6 +1,5 @@
 package com.example.englishappforkid.presentation.screens.auth
 
-import AuthViewModel
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

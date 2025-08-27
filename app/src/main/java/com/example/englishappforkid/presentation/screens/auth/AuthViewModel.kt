@@ -1,9 +1,9 @@
+package com.example.englishappforkid.presentation.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.englishappforkid.data.DataManager
 import com.example.englishappforkid.data.model.UserProfile
-import com.example.englishappforkid.presentation.screens.auth.AuthState
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -52,7 +52,11 @@ class AuthViewModel(
             .createUserWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveUserProfileIfNew(auth.currentUser?.uid, auth.currentUser?.email)
+                    val user = auth.currentUser
+                    if (user != null) {
+                        saveUserProfileIfNew(user.uid, user.email)
+                        createDefaultLeaderboardEntryIfNeeded(user.uid)
+                    }
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -67,7 +71,7 @@ class AuthViewModel(
     fun signIn(
         rememberMe: Boolean,
         onSuccess: () -> Unit,
-    ) { // Thêm `rememberMe: Boolean`
+    ) {
         _uiState.update { it.copy(isLoading = true, error = null) }
 
         if (_uiState.value.email.isBlank() || _uiState.value.pass.isBlank()) {
@@ -79,11 +83,13 @@ class AuthViewModel(
             .signInWithEmailAndPassword(_uiState.value.email, _uiState.value.pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Gọi hàm lưu/xóa credentials sau khi đăng nhập thành công
                     saveOrClearCredentials(rememberMe)
-
-                    // Không overwrite profile, chỉ fetch
                     fetchUserProfile(auth.currentUser?.uid)
+
+                    val user = auth.currentUser
+                    if (user != null) {
+                        createDefaultLeaderboardEntryIfNeeded(user.uid)
+                    }
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -106,7 +112,11 @@ class AuthViewModel(
             .signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveUserProfileIfNew(auth.currentUser?.uid, auth.currentUser?.email)
+                    val user = auth.currentUser
+                    if (user != null) {
+                        saveUserProfileIfNew(user.uid, user.email)
+                        createDefaultLeaderboardEntryIfNeeded(user.uid)
+                    }
                     onSuccess()
                 } else {
                     _uiState.update {
@@ -117,7 +127,7 @@ class AuthViewModel(
             }
     }
 
-    // ✅ Chỉ tạo mới nếu chưa có
+    // ✅ Tạo profile nếu chưa có
     private fun saveUserProfileIfNew(
         uid: String?,
         email: String?,
@@ -146,7 +156,7 @@ class AuthViewModel(
             }
     }
 
-    // ✅ Fetch dữ liệu từ Firestore khi login
+    // ✅ Fetch profile khi login
     private fun fetchUserProfile(uid: String?) {
         if (uid == null) return
 
@@ -158,13 +168,14 @@ class AuthViewModel(
                 val profile = document.toObject(UserProfile::class.java)
                 if (profile != null) {
                     _uiState.update { it.copy(currentUser = profile) }
+                    updateLeaderboardFromProfile(uid, profile)
                 }
             }.addOnFailureListener { e ->
                 _uiState.update { it.copy(error = "Failed to load user profile: ${e.message}") }
             }
     }
 
-    // Hàm để gửi email reset mật khẩu
+    // ✅ Reset password
     fun sendPasswordResetEmail(onSuccess: () -> Unit) {
         _uiState.update { it.copy(isLoading = true, error = null) }
 
@@ -188,7 +199,7 @@ class AuthViewModel(
             }
     }
 
-    // Hàm để LƯU hoặc XÓA thông tin đăng nhập tùy vào checkbox
+    // ✅ Lưu hoặc xóa credentials
     fun saveOrClearCredentials(shouldSave: Boolean) {
         val email = _uiState.value.email
         val pass = _uiState.value.pass
@@ -201,12 +212,55 @@ class AuthViewModel(
         }
     }
 
-    // Hàm để TẢI thông tin đã lưu khi mở màn hình
+    // ✅ Tải credentials đã lưu
     fun loadSavedCredentials() {
         viewModelScope.launch {
             val email = dataManager.userEmailFlow.first() ?: ""
             val pass = dataManager.userPasswordFlow.first() ?: ""
             _uiState.update { it.copy(email = email, pass = pass) }
         }
+    }
+
+    // ✅ Tạo entry mặc định cho leaderboard nếu chưa có
+    fun createDefaultLeaderboardEntryIfNeeded(userId: String) {
+        val leaderboardRef = db.collection("leaderboard").document(userId)
+
+        leaderboardRef.get().addOnSuccessListener { doc ->
+            if (!doc.exists()) {
+                db
+                    .collection("user_profiles")
+                    .document(userId)
+                    .get()
+                    .addOnSuccessListener { userDoc ->
+                        val profile = userDoc.toObject(UserProfile::class.java)
+                        val displayName = profile?.fullname ?: "Player"
+                        val avatar = profile?.avatarUrl ?: ""
+
+                        leaderboardRef.set(
+                            mapOf(
+                                "name" to displayName,
+                                "score" to 0,
+                                "avatar" to avatar,
+                            ),
+                        )
+                    }
+            }
+        }
+    }
+
+    // ✅ Cập nhật name + avatar trong leaderboard khi profile đổi
+    private fun updateLeaderboardFromProfile(
+        userId: String,
+        profile: UserProfile,
+    ) {
+        db
+            .collection("leaderboard")
+            .document(userId)
+            .update(
+                mapOf(
+                    "name" to profile.fullname,
+                    "avatar" to profile.avatarUrl,
+                ),
+            )
     }
 }
