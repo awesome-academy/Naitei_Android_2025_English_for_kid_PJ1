@@ -1,6 +1,5 @@
 package com.example.englishappforkid.presentation.screens.auth // <-- Thay đổi package nếu cần
 
-import AuthViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.englishappforkid.data.DataManager

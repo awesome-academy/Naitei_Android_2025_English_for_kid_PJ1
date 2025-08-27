@@ -1,4 +1,4 @@
-package com.example.englishappforkid.presentation.screens.home
+package com.example.englishappforkid.presentation.screens.gametopic
 
 import androidx.lifecycle.ViewModel
 import com.example.englishappforkid.data.repository.TopicRepository

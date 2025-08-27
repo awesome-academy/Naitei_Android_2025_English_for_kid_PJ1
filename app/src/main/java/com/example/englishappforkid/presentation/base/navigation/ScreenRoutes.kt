@@ -17,4 +17,5 @@ object ScreenRoutes {
     const val FORGOT_PASSWORD = "forgot_password"
     const val EDIT_PROFILE = "edit_profile"
     const val MAIN_SCREEN = "main_screen"
+    const val GAME = "game"
 }

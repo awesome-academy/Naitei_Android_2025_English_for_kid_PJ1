@@ -1,4 +1,4 @@
-package com.example.englishappforkid.presentation.screens.home
+package com.example.englishappforkid.presentation.screens.gametopic
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
@@ -17,20 +17,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
-import com.example.englishappforkid.data.DataSource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.englishappforkid.data.model.Topic
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun contentListScreen(navController: NavHostController) {
-    var isListView by remember { mutableStateOf(true) }
+fun homeScreen(homeViewModel: HomeViewModel = viewModel()) {
+    val uiState by homeViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val onItemClick: (Topic) -> Unit = { topic ->
         Toast.makeText(context, "Clicked on ${topic.name}", Toast.LENGTH_SHORT).show()
@@ -41,9 +38,9 @@ fun contentListScreen(navController: NavHostController) {
             TopAppBar(
                 title = { Text("English Topics") },
                 actions = {
-                    IconButton(onClick = { isListView = !isListView }) {
+                    IconButton(onClick = { homeViewModel.toggleView() }) {
                         Icon(
-                            imageVector = if (isListView) Icons.Default.GridView else Icons.Default.ViewList,
+                            imageVector = if (uiState.isListView) Icons.Default.GridView else Icons.Default.ViewList,
                             contentDescription = "Switch View",
                         )
                     }
@@ -51,9 +48,9 @@ fun contentListScreen(navController: NavHostController) {
             )
         },
     ) { innerPadding ->
-        if (isListView) {
+        if (uiState.isListView) {
             LazyColumn(modifier = Modifier.padding(innerPadding)) {
-                items(DataSource.topics) { topic ->
+                items(uiState.topics) { topic ->
                     topicListItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }
@@ -62,7 +59,7 @@ fun contentListScreen(navController: NavHostController) {
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.padding(innerPadding),
             ) {
-                items(DataSource.topics) { topic ->
+                items(uiState.topics) { topic ->
                     topicGridItem(topic = topic, onClick = { onItemClick(topic) })
                 }
             }

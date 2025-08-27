@@ -14,5 +14,6 @@ val bottomNavItems =
         BottomNavItem(ScreenRoutes.HOME, R.drawable.ic_home),
         BottomNavItem(ScreenRoutes.SONG_LIST, R.drawable.ic_book),
         BottomNavItem(ScreenRoutes.DOWNLOAD, R.drawable.ic_download),
+        BottomNavItem(ScreenRoutes.GAME, R.drawable.ic_game),
         BottomNavItem(ScreenRoutes.PROFILE, R.drawable.ic_user),
     )
