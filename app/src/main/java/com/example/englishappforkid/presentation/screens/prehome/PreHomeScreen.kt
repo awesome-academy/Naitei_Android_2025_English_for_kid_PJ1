@@ -80,7 +80,7 @@ fun preHomeScreenContent(
             Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(all =12.dp),
+                .padding(all = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         headerSection(email, navController, onRefresh)
@@ -171,6 +171,7 @@ fun headerSection(
         }
     }
 }
+
 @Composable
 fun menuCard(
     title: String,

@@ -98,7 +98,7 @@ fun gameScreen(
                         text = "Score: ${gameUiState.score}",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Cowbell
+                        color = Cowbell,
                     )
                 }
             }
@@ -117,7 +117,6 @@ fun gameScreen(
                     Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = stringResource(R.string.delete))
                 }
             }
-
 
             characterGrid(
                 characters = gameUiState.availableCharacters.map { it.toString() },
