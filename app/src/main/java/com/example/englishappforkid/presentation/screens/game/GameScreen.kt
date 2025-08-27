@@ -50,6 +50,7 @@ import androidx.navigation.NavHostController
 import com.example.englishappforkid.R
 import com.example.englishappforkid.presentation.base.navigation.ScreenRoutes
 import com.example.englishappforkid.ui.theme.Cowbell
+import com.example.englishappforkid.ui.theme.Pink80
 import com.example.englishappforkid.ui.theme.boxBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,6 +88,20 @@ fun gameScreen(
             gameProgress(currentWordCount = gameUiState.currentWordCount, totalWords = MAX_NO_OF_WORDS)
             Spacer(modifier = Modifier.height(16.dp))
 
+            Card(
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(containerColor = Pink80), // màu vàng nhạt
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Score: ${gameUiState.score}",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Cowbell
+                    )
+                }
+            }
             scrambledLettersDisplay(scrambledWord = gameUiState.scrambledWord)
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -103,7 +118,6 @@ fun gameScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
             characterGrid(
                 characters = gameUiState.availableCharacters.map { it.toString() },
@@ -145,7 +159,7 @@ fun scrambledLettersDisplay(scrambledWord: String) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(80.dp),
+                .height(70.dp),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
@@ -209,7 +223,7 @@ fun wordDisplay(
     pronunciation: String,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().height(120.dp),
+        modifier = Modifier.fillMaxWidth().height(100.dp),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = boxBackground),
     ) {
