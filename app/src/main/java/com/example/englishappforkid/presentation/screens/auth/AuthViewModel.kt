@@ -16,12 +16,11 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val dataManager: DataManager,
+    private val auth: FirebaseAuth,
+    private val db: FirebaseFirestore,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AuthState())
     val uiState = _uiState.asStateFlow()
-
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun onEmailChange(email: String) {
         _uiState.update { it.copy(email = email) }
